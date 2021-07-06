@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - docker build -f ./api/docker/Dockerfile -t hombrew/rtb-api:latest ./api
+      - docker build -t hombrew/rtb-server:latest ./server
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+      - docker push hombrew/rtb-api
+      - docker push hombrew/rtb-server
+
+  post_build:
+    commands:
+      - echo Deployment completed on `date`

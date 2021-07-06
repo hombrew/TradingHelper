@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  server:
+    container_name: server
+    depends_on:
+      - api
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    ports:
+      - "3050:80"
+
+  api:
+    container_name: api
+    env_file:
+      - ./.env
+    build:
+      dockerfile: ./docker/Dockerfile.dev
+      context: ./api
+    restart: unless-stopped
+    volumes:
+      - /app/node_modules
+      - ./api:/app
