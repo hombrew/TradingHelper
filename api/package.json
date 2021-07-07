@@ -17,7 +17,7 @@
     "lodash.groupby": "4.6.0",
     "node-binance-api": "0.12.5",
     "node-telegram-bot-api": "0.53.0",
-    "puppeteer": "10.1.0"
+    "puppeteer": "10.0.0"
   },
   "devDependencies": {}
 }
