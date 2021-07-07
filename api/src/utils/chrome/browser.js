@@ -1,4 +1,4 @@
-const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer");
 
 class Chrome {
   async getBrowser() {
@@ -9,12 +9,15 @@ class Chrome {
   }
 
   async _createBrowser() {
-    this.browser = await chromium.puppeteer.launch({
-      args: [...chromium.args, "--disable-dev-shm-usage"],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+    this.browser = await puppeteer.launch({
+      headless: true,
+      // executablePath: "/usr/bin/chromium-browser",
+      args: [
+        "--no-sandbox",
+        "--headless",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+      ],
     });
   }
 }
