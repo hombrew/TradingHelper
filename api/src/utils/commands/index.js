@@ -5,14 +5,14 @@ const { encodeCreateMessage } = require("../telegram");
 
 async function executeCommand(command, data) {
   switch (command) {
-    case COMMAND_CREATE:
+    case COMMAND_CREATE: {
       const created = await createOrder(data);
       return encodeCreateMessage(created);
-      break;
-    case COMMAND_CALCULATE:
+    }
+    case COMMAND_CALCULATE: {
       const calculated = await calculateOrder(data);
       return encodeCreateMessage(calculated);
-      break;
+    }
     default:
       throw new Error(`Command '${command}' is not implemented yet`);
   }

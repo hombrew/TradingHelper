@@ -1,4 +1,7 @@
-const { BINANCE_CALCULATOR_LIQ_DELTA } = require("../../config/constants");
+const {
+  BINANCE_CALCULATOR_LIQ_DELTA,
+  TRADE_DIRECTION_LONG,
+} = require("../../config/constants");
 const { contracts } = require("../../config/binance.contracts");
 const { truncate } = require("../common");
 
@@ -7,7 +10,7 @@ function getNeededMargin(risked) {
 }
 
 function getNeededLiquidation(direction, price, stopLoss) {
-  if (direction === "LONG") {
+  if (direction === TRADE_DIRECTION_LONG) {
     return price - (100 * (price - stopLoss)) / BINANCE_CALCULATOR_LIQ_DELTA;
   }
 
@@ -39,7 +42,7 @@ function getTradeConfiguration(symbol, direction, risked, price, stopLoss) {
   const balance = getNeededMargin(risked);
 
   const data = contracts[symbol];
-  const isLong = direction === "LONG";
+  const isLong = direction === TRADE_DIRECTION_LONG;
   const side = isLong ? 1 : -1;
   const minmax = isLong ? "max" : "min";
 
@@ -102,13 +105,13 @@ function fixTradeConfig(minimum, order) {
 
   if (order.position < minQty) {
     throw new Error(
-      `Position size of '${position}' is less than the minimum quantity allowed of ${minQty} per trade`
+      `Position size of '${order.position}' is less than the minimum quantity allowed of ${minQty} per trade`
     );
   }
 
   if (order.position > maxQty) {
     throw new Error(
-      `Position size of '${position}' exceeds the maximum quantity allowed of ${maxQty} per trade`
+      `Position size of '${order.position}' exceeds the maximum quantity allowed of ${maxQty} per trade`
     );
   }
 

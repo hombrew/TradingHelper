@@ -15,7 +15,7 @@ function checkCommand(command) {
 function checkData(data) {
   const keys = ["ticker", "ep", "parts", "sl", "tp", "direction", "risked"];
 
-  for (key of keys) {
+  for (const key of keys) {
     if (
       key !== "parts" &&
       !(
@@ -27,7 +27,7 @@ function checkData(data) {
     }
   }
 
-  for (key of Object.keys(data)) {
+  for (const key of Object.keys(data)) {
     if (!keys.includes(key)) {
       throw new Error(`'${key.toUpperCase()}' is not needed.`);
     }

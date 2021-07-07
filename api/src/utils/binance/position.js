@@ -19,8 +19,7 @@ const sell = {
 
 async function openPosition(order) {
   const { symbol, leverage, position, price, direction } = order;
-  const [type, counterType] =
-    direction === TRADE_DIRECTION_LONG ? [buy, sell] : [sell, buy];
+  const [type] = direction === TRADE_DIRECTION_LONG ? [buy, sell] : [sell, buy];
 
   let response;
   try {
@@ -35,11 +34,6 @@ async function openPosition(order) {
   await sleep(1000);
 
   return response;
-  // return binance.futuresOrder(counterType.side, symbol, position, false, {
-  //   type: "STOP_MARKET",
-  //   stopPrice: stopLoss,
-  //   closePosition: true,
-  // });
 }
 
 module.exports.getOpenPositions = getOpenPositions;

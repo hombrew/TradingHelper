@@ -7,7 +7,6 @@ const {
   getMinimum,
   fixTradeConfig,
 } = require("../binance");
-const { sendMessage } = require("../telegram");
 
 function generateDCAEntryPrices(ep, parts, direction) {
   if (ep.length === 1) return ep;

@@ -5,13 +5,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const { TELEGRAM_CHAT_ID } = require("./src/config/constants");
+const { onInit, onExit } = require("./src/lifecycle");
 const {
   telegramBot,
   sendMessage,
   checkChatId,
   decodeMessage,
-  encodeMessage,
 } = require("./src/utils/telegram");
 const { executeCommand } = require("./src/utils/commands");
 
@@ -36,14 +35,16 @@ app.post("/telegram_webhook", async (req, res) => {
     data = await executeCommand(command, data);
   } catch (e) {
     await telegramBot.sendMessage(message.chat.id, e.message);
-    return res.send({greet: "bye"});
+    return res.send({ greet: "bye" });
   }
 
   await sendMessage(data);
 
-  return res.send({greet: "hello"});
+  return res.send({ greet: "hello" });
 });
 
-app.listen(5000, (err) => {
-  console.log("Listening");
+app.listen(5000, () => {
+  console.info("Listening @ port 5000");
+  onInit();
+  onExit();
 });
