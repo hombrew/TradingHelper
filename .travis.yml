@@ -10,3 +10,15 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push hombrew/rtb-api
   - docker push hombrew/rtb-server
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-1
+  app: RTB2
+  env: Rtb2-env
+  bucket_name: elasticbeanstalk-us-east-1-820887859340
+  bucket_path: RTB2
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
