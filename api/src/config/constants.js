@@ -27,7 +27,7 @@ module.exports.TRADINGVIEW_PASSWORD = process.env.TRADINGVIEW_PASSWORD;
 module.exports.DB_USERNAME = process.env.DB_USERNAME;
 module.exports.DB_PASSWORD = process.env.DB_PASSWORD;
 module.exports.DB_HOST = process.env.DB_HOST;
-module.exports.DB_DB = process.env.DB_HOST;
+module.exports.DB_DB = process.env.DB_DB;
 
 /**
  * Configuration
