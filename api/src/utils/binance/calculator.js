@@ -3,7 +3,8 @@ const {
   TRADE_DIRECTION_LONG,
 } = require("../../config/constants");
 const { contracts } = require("../../config/binance.contracts");
-const { truncate } = require("../common");
+const { truncate, addBy } = require("../common");
+const { getMinimum } = require("./minimum");
 
 function getNeededMargin(risked) {
   return (100 * risked) / BINANCE_CALCULATOR_LIQ_DELTA;
@@ -11,10 +12,14 @@ function getNeededMargin(risked) {
 
 function getNeededLiquidation(direction, price, stopLoss) {
   if (direction === TRADE_DIRECTION_LONG) {
-    return price - (100 * (price - stopLoss)) / BINANCE_CALCULATOR_LIQ_DELTA;
+    return (
+      price - (100 * (price - stopLoss.price)) / BINANCE_CALCULATOR_LIQ_DELTA
+    );
   }
 
-  return price + (100 * (stopLoss - price)) / BINANCE_CALCULATOR_LIQ_DELTA;
+  return (
+    price + (100 * (stopLoss - price.price)) / BINANCE_CALCULATOR_LIQ_DELTA
+  );
 }
 
 function createLeveragedList(from, to) {
@@ -37,7 +42,9 @@ function getRowByNotional(data, notional) {
   );
 }
 
-function getTradeConfiguration(symbol, direction, risked, price, stopLoss) {
+function getEntryOrderConfiguration(entryOrder, risked, direction, stopLoss) {
+  const { symbol, price } = entryOrder;
+
   const liquidation = getNeededLiquidation(direction, price, stopLoss);
   const balance = getNeededMargin(risked);
 
@@ -89,47 +96,58 @@ function getTradeConfiguration(symbol, direction, risked, price, stopLoss) {
   );
 
   return {
-    symbol,
-    direction,
-    risked,
-    price,
-    stopLoss,
+    ...entryOrder,
     leverage: maxLeverage,
     position: maxPosition,
     liquidation: maxLiquidationAvailable,
   };
 }
 
-function fixTradeConfig(minimum, order) {
+function fixTradeEntries(minimum, entries) {
   const { minQty, maxQty, tickSize, stepSize } = minimum;
 
-  if (order.position < minQty) {
-    throw new Error(
-      `Position size of '${order.position}' is less than the minimum quantity allowed of ${minQty} per trade`
-    );
-  }
+  return entries.map((order) => {
+    if (order.position < minQty) {
+      throw new Error(
+        `Position size of '${order.position}' is less than the minimum quantity allowed of ${minQty} per trade`
+      );
+    }
 
-  if (order.position > maxQty) {
-    throw new Error(
-      `Position size of '${order.position}' exceeds the maximum quantity allowed of ${maxQty} per trade`
-    );
-  }
+    if (order.position > maxQty) {
+      throw new Error(
+        `Position size of '${order.position}' exceeds the maximum quantity allowed of ${maxQty} per trade`
+      );
+    }
 
-  const position = truncate(order.position, stepSize);
-  const price = truncate(order.price, tickSize);
-  const margin = (position * price) / order.leverage;
-  const risked = (BINANCE_CALCULATOR_LIQ_DELTA * margin) / 100;
+    const position = truncate(order.position, stepSize);
+    const price = truncate(order.price, tickSize);
+    const margin = (position * price) / order.leverage;
+    const risked = (BINANCE_CALCULATOR_LIQ_DELTA * margin) / 100;
 
+    return {
+      ...order,
+      position,
+      price,
+      margin: truncate(margin, tickSize),
+      risked: truncate(risked, tickSize),
+      liquidation: truncate(order.liquidation, tickSize),
+    };
+  });
+}
+
+async function fixTradeConfig(trade) {
+  const minimum = await getMinimum(trade.symbol);
+  const entries = fixTradeEntries(minimum, trade.entries);
   return {
-    ...order,
-    position,
-    price,
-    margin: truncate(margin, tickSize),
-    risked: truncate(risked, tickSize),
-    stopLoss: truncate(order.stopLoss, tickSize),
-    liquidation: truncate(order.liquidation, tickSize),
+    ...trade,
+    risked: addBy(entries, ({ risked }) => risked),
+    entries,
+    stopLoss: {
+      ...trade.stopLoss,
+      price: truncate(trade.stopLoss.price, minimum.tickSize),
+    },
   };
 }
 
-module.exports.getTradeConfiguration = getTradeConfiguration;
+module.exports.getEntryOrderConfiguration = getEntryOrderConfiguration;
 module.exports.fixTradeConfig = fixTradeConfig;

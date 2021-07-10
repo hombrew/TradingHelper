@@ -207,3 +207,39 @@ const contracts = {
 };
 
 module.exports.contracts = contracts;
+
+module.exports.ORDER_TYPE_LIMIT = "LIMIT";
+module.exports.ORDER_TYPE_MARKET = "MARKET";
+module.exports.ORDER_TYPE_STOP = "STOP";
+module.exports.ORDER_TYPE_STOP_MARKET = "STOP_MARKET";
+module.exports.ORDER_TYPE_TAKE_PROFIT = "TAKE_PROFIT";
+module.exports.ORDER_TYPE_TAKE_PROFIT_MARKET = "TAKE_PROFIT_MARKET";
+module.exports.ORDER_TYPE_TRAILING_STOP_MARKET = "TRAILING_STOP_MARKET";
+module.exports.ORDER_TYPES = [
+  module.exports.ORDER_TYPE_LIMIT,
+  module.exports.ORDER_TYPE_MARKET,
+  module.exports.ORDER_TYPE_STOP,
+  module.exports.ORDER_TYPE_STOP_MARKET,
+  module.exports.ORDER_TYPE_TAKE_PROFIT,
+  module.exports.ORDER_TYPE_TAKE_PROFIT_MARKET,
+  module.exports.ORDER_TYPE_TRAILING_STOP_MARKET,
+];
+
+module.exports.ORDER_STATUS_NEW = "NEW";
+module.exports.ORDER_STATUS_PARTIALLY_FILLED = "PARTIALLY_FILLED";
+module.exports.ORDER_STATUS_FILLED = "FILLED";
+module.exports.ORDER_STATUS_CANCELLED = "CANCELLED";
+module.exports.ORDER_STATUS_REJECTED = "REJECTED";
+module.exports.ORDER_STATUS_EXPIRED = "EXPIRED";
+module.exports.ORDER_STATUS = [
+  module.exports.ORDER_STATUS_NEW,
+  module.exports.ORDER_STATUS_PARTIALLY_FILLED,
+  module.exports.ORDER_STATUS_FILLED,
+  module.exports.ORDER_STATUS_CANCELLED,
+  module.exports.ORDER_STATUS_REJECTED,
+  module.exports.ORDER_STATUS_EXPIRED,
+];
+
+module.exports.TRADE_STATUS_CREATED = "CREATED";
+module.exports.TRADE_STATUS_IN_PROGRESS = "IN_PROGRESS";
+module.exports.TRADE_STATUS_COMPLETED = "COMPLETED";

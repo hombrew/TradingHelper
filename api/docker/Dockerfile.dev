@@ -1,8 +1,8 @@
-FROM buildkite/puppeteer:10.0.0
+FROM node:alpine
 
 WORKDIR '/app'
+RUN npm i -g supervisor
 COPY ./package.json ./
 RUN npm i
 COPY . .
-RUN npm i -g nodemon
 CMD ["npm", "run", "dev"]

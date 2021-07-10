@@ -17,8 +17,8 @@ const sell = {
   method: "futuresSell",
 };
 
-async function openPosition(order) {
-  const { symbol, leverage, position, price, direction } = order;
+async function openPosition(direction, order) {
+  const { symbol, leverage, position, price } = order;
   const [type] = direction === TRADE_DIRECTION_LONG ? [buy, sell] : [sell, buy];
 
   let response;

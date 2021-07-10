@@ -15,7 +15,7 @@ deploy:
   provider: elasticbeanstalk
   region: us-east-1
   app: RTB2
-  env: Rtb2-env
+  env: Rtb2-1-env
   bucket_name: elasticbeanstalk-us-east-1-820887859340
   bucket_path: RTB2
   on:

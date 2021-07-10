@@ -1,4 +1,4 @@
-FROM buildkite/puppeteer:10.0.0
+FROM node:alpine
 
 WORKDIR '/app'
 COPY ./package.json ./

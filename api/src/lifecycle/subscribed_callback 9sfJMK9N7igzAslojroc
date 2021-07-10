@@ -210,3 +210,61 @@ order_update_callback {
     realizedProfit: '0'
   }
 }
+
+
+account_update_callback {
+api       |   "eventType": "ACCOUNT_UPDATE",
+api       |   "eventTime": 1625749853145,
+api       |   "transaction": 1625749853140,
+api       |   "updateData": {
+api       |     "eventReasonType": "ORDER",
+api       |     "balances": [
+api       |       {
+api       |         "asset": "USDT",
+api       |         "walletBalance": "207.30215489",
+api       |         "crossWalletBalance": "195.09948212"
+api       |       }
+api       |     ],
+api       |     "positions": [
+api       |       {
+api       |         "symbol": "ETHUSDT",
+api       |         "positionAmount": "-0.034",
+api       |         "entryPrice": "2156.00000",
+api       |         "accumulatedRealized": "6.58136000",
+api       |         "unrealizedPnL": "-0.02809090",
+api       |         "marginType": "isolated",
+api       |         "isolatedWallet": "12.20267277",
+api       |         "positionSide": "BOTH"
+api       |       }
+api       |     ]
+api       |   }
+api       | }
+
+
+
+
+ORDER RESPONSES [
+api       |   {
+api       |     "orderId": 25348696045,
+api       |     "symbol": "BTCUSDT",
+api       |     "status": "NEW",
+api       |     "clientOrderId": "e4xMnzuN3DvlkOMuSYPq7G",
+api       |     "price": "31300",
+api       |     "avgPrice": "0.00000",
+api       |     "origQty": "0.004",
+api       |     "executedQty": "0",
+api       |     "cumQty": "0",
+api       |     "cumQuote": "0",
+api       |     "timeInForce": "GTX",
+api       |     "type": "LIMIT",
+api       |     "reduceOnly": false,
+api       |     "closePosition": false,
+api       |     "side": "BUY",
+api       |     "positionSide": "BOTH",
+api       |     "stopPrice": "0",
+api       |     "workingType": "CONTRACT_PRICE",
+api       |     "priceProtect": false,
+api       |     "origType": "LIMIT",
+api       |     "updateTime": 1625797088496
+api       |   }
+api       | ]

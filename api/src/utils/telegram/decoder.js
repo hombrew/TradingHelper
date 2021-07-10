@@ -13,7 +13,15 @@ function checkCommand(command) {
 }
 
 function checkData(data) {
-  const keys = ["ticker", "ep", "parts", "sl", "tp", "direction", "risked"];
+  const keys = [
+    "symbol",
+    "entries",
+    "parts",
+    "stopLoss",
+    "takeProfits",
+    "direction",
+    "risked",
+  ];
 
   for (const key of keys) {
     if (
@@ -33,11 +41,11 @@ function checkData(data) {
     }
   }
 
-  if (data["ep"].length > 1 && !data["parts"]) {
+  if (data["entries"].length > 1 && !data["parts"]) {
     throw new Error("'PARTS' is needed, as 'EP' is a range");
   }
 
-  if (data["ep"].length > 2) {
+  if (data["entries"].length > 2) {
     throw new Error("'EP' is not a valid range");
   }
 }
@@ -48,15 +56,19 @@ function checkValues(data) {
   let hasValidTP;
 
   if (data.direction === TRADE_DIRECTION_LONG) {
-    hasValidEP = data.ep.length === 2 ? data.ep[0] > data.ep[1] : true;
-    hasValidSL = data.ep[data.ep.length - 1] > data.sl[0];
-    hasValidTP = data.tp.every((tp) => tp > data.ep[0]);
+    hasValidEP =
+      data.entries.length === 2 ? data.entries[0] > data.entries[1] : true;
+    hasValidSL = data.entries[data.entries.length - 1] > data.stopLoss;
+    hasValidTP = data.takeProfits.every((tp) => tp > data.entries[0]);
   }
 
   if (data.direction === TRADE_DIRECTION_SHORT) {
-    hasValidEP = data.ep.length === 2 ? data.ep[0] < data.ep[1] : true;
-    hasValidSL = data.ep[data.ep.length - 1] < data.sl[0];
-    hasValidTP = data.tp.every((tp) => tp < data.ep[data.ep.length - 1]);
+    hasValidEP =
+      data.entries.length === 2 ? data.entries[0] < data.entries[1] : true;
+    hasValidSL = data.entries[data.entries.length - 1] < data.stopLoss;
+    hasValidTP = data.takeProfits.every(
+      (tp) => tp < data.entries[data.entries.length - 1]
+    );
   }
 
   if (!hasValidEP) throw new Error("'EP' is not valid");
@@ -64,14 +76,24 @@ function checkValues(data) {
   if (!hasValidTP) throw new Error("'TP' is not valid");
 }
 
+const keys = {
+  sl: "stopLoss",
+  tp: "takeProfits",
+  ep: "entries",
+};
+function getRealKey(key) {
+  key = key.toLowerCase();
+  return keys[key] || key;
+}
+
 function decodeMessage(message) {
-  const [[command], ...parts] = message
+  const [[command], ...rest] = message
     .split("\n")
     .map((sentence) => sentence.split(":"));
 
-  const values = parts.reduce((acc, [key, values]) => {
+  const values = rest.reduce((acc, [key, values]) => {
     const separator = values.includes("-") ? "-" : " ";
-    acc[key.toLowerCase()] = values
+    acc[getRealKey(key)] = values
       .trim()
       .split(separator)
       .map((value) => value.trim());
@@ -79,7 +101,9 @@ function decodeMessage(message) {
   }, {});
 
   values.direction =
-    values.ep[0] > values.sl[0] ? TRADE_DIRECTION_LONG : TRADE_DIRECTION_SHORT;
+    values.entries[0] > values.stopLoss[0]
+      ? TRADE_DIRECTION_LONG
+      : TRADE_DIRECTION_SHORT;
 
   if (typeof values.parts === "undefined") {
     values.parts = ["1"];
@@ -88,12 +112,12 @@ function decodeMessage(message) {
   checkCommand(command);
   checkData(values);
 
-  values.risked = values.risked.map(parseFloat);
-  values.ep = values.ep.map(parseFloat);
-  values.parts = values.parts.map(parseInt);
-  values.sl = values.sl.map(parseFloat);
-  values.tp = values.tp.map(parseFloat);
-
+  values.symbol = values.symbol[0];
+  values.risked = parseFloat(values.risked[0]);
+  values.entries = values.entries.map(parseFloat);
+  values.parts = parseInt(values.parts[0]);
+  values.stopLoss = parseFloat(values.stopLoss[0]);
+  values.takeProfits = values.takeProfits.map(parseFloat);
   checkValues(values);
 
   return [command, values];

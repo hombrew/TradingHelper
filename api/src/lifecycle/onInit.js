@@ -1,12 +1,17 @@
 const { binance } = require("../utils/binance");
+const { Queue } = require("./Queue");
+
+// Queue.on(({ order }) => {
+
+// })
 
 function onInit() {
   binance.websockets.userFutureData(
-    console.info.bind(console, "margin_call_callback"),
-    console.info.bind(console, "account_update_callback"),
-    console.info.bind(console, "order_update_callback"),
-    console.info.bind(console, "subscribed_callback"),
-    console.info.bind(console, "account_config_update_callback")
+    null, // margin_call_callback
+    null, // account_update_callback
+    Queue.add.bind(Queue), // order_update_callback
+    null, // subscribed_callback
+    null // account_config_update_callback
   );
 }
 

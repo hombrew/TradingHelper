@@ -4,7 +4,7 @@
   "description": "a trading helper",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "supervisor index.js",
     "start": "node index.js",
     "test": "jest --coverage"
   },
@@ -15,9 +15,9 @@
     "cors": "2.8.5",
     "express": "4.17.1",
     "lodash.groupby": "4.6.0",
+    "mongoose": "5.13.2",
     "node-binance-api": "0.12.5",
-    "node-telegram-bot-api": "0.53.0",
-    "puppeteer": "10.0.0"
+    "node-telegram-bot-api": "0.53.0"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",

@@ -12,7 +12,7 @@ const {
   checkChatId,
   decodeMessage,
 } = require("./src/utils/telegram");
-const { executeCommand } = require("./src/utils/commands");
+const { executeCommand } = require("./src/commands");
 
 const app = express();
 app.use(cors());
