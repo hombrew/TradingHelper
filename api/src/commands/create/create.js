@@ -1,6 +1,6 @@
-const { openPosition } = require("../../utils/binance");
-const { sendMessage } = require("../../utils/telegram");
-const { Trade, Order } = require("../../utils/db");
+const { openPosition } = require("../../services/binance");
+const { sendMessage } = require("../../services/telegram");
+const { Trade, Order } = require("../../services/db");
 const { calculateTradeEntries } = require("../calculate");
 
 async function addBinanceOrders(direction, orders) {

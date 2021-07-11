@@ -5,7 +5,7 @@ const {
 const {
   getEntryOrderConfiguration,
   fixTradeConfig,
-} = require("../utils/binance");
+} = require("../services/binance");
 const { formatUnprocessedTrade } = require("./formatters");
 
 function generateDCAEntryOrders(entries, parts, direction) {

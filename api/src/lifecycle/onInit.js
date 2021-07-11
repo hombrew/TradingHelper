@@ -1,4 +1,4 @@
-const { binance } = require("../utils/binance");
+const { binance } = require("../services/binance");
 const { Queue } = require("./Queue");
 
 // Queue.on(({ order }) => {

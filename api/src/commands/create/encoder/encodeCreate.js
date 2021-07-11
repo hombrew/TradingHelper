@@ -1,4 +1,4 @@
-const { addBy } = require("../../../utils/common");
+const { addBy } = require("../../../utils");
 const { ORDER_STATUS_FILLED } = require("../../../config/binance.contracts");
 const { TRADE_DIRECTION_LONG } = require("../../../config/constants");
 const { title } = require("./common");
@@ -15,7 +15,7 @@ function translate(trade) {
     trade.direction === TRADE_DIRECTION_LONG ? "🐂" : "🧸";
 
   text += `${title(symbol, true)}\n`;
-  text += `${getTradeDirection(trade)} ${trade.direction}\n`;
+  text += `${getTradeDirection(trade)} ${direction}\n`;
   text += `🚀 Max risk: ${risked}\n`;
   text += `🏛️ Currently risked: ${currentlyRisked}\n`;
   text += `💣 Stop Loss: ${stopLoss.price}\n`;

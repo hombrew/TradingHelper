@@ -1,4 +1,4 @@
-const { binance } = require("../utils/binance");
+const { binance } = require("../services/binance");
 
 function exitHandler() {
   const subscriptions = binance.websockets.subscriptions();

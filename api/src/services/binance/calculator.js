@@ -3,7 +3,7 @@ const {
   TRADE_DIRECTION_LONG,
 } = require("../../config/constants");
 const { contracts } = require("../../config/binance.contracts");
-const { truncate, addBy } = require("../common");
+const { truncate, addBy } = require("../../utils");
 const { getMinimum } = require("./minimum");
 
 function getNeededMargin(risked) {

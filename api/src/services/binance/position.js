@@ -1,6 +1,6 @@
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 const { binance } = require("./api");
-const { sleep } = require("../common");
+const { sleep } = require("../../utils");
 
 async function getOpenPositions() {
   const allPositions = await binance.futuresPositionRisk();

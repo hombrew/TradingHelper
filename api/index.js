@@ -1,4 +1,3 @@
-// Express App Setup
 "use strict";
 
 const express = require("express");
@@ -11,7 +10,7 @@ const {
   sendMessage,
   checkChatId,
   decodeMessage,
-} = require("./src/utils/telegram");
+} = require("./src/services/telegram");
 const { executeCommand } = require("./src/commands");
 
 const app = express();
