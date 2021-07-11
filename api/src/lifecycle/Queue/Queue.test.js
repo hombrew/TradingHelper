@@ -1,5 +1,5 @@
-const { flushPromises, mockConsole } = require("../../test.helpers");
-const { sleep } = require("../../utils/common");
+const { flushPromises, mockConsole } = require("../../../test.helpers");
+const { sleep } = require("../../utils");
 const { Queue } = require(".");
 
 jest.mock("console");
