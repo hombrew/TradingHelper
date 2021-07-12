@@ -1,12 +1,12 @@
 const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
-} = require("../config/constants");
+} = require("../../config/constants");
 const {
   getEntryOrderConfiguration,
   fixTradeConfig,
-} = require("../services/binance");
-const { formatUnprocessedTrade } = require("./formatters");
+} = require("../../services/binance");
+const { formatUnprocessedTrade } = require("../formatters");
 
 function generateDCAEntryOrders(entries, parts, direction) {
   if (entries.length === 1) return entries;

@@ -1,7 +1,5 @@
-const createFile = require("./create");
-const encoderDir = require("./encoder");
+const commandFile = require("./command");
 
 module.exports = {
-  ...createFile,
-  ...encoderDir,
+  ...commandFile,
 };

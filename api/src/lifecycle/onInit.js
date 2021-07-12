@@ -4,7 +4,7 @@ const {
 } = require("../config/binance.contracts");
 const { binance } = require("../services/binance");
 const { sendMessage } = require("../services/telegram");
-const { encodeTrades } = require("../commands/create/encoder/encodeCreate");
+const { encodeCalculateData } = require("../commands/calculate");
 const { Queue } = require("./Queue");
 const { onEntryFill } = require("./onEntryFill");
 
@@ -16,7 +16,7 @@ Queue.on(async ({ order }) => {
   try {
     if (isFilledEntry) {
       const responseMessage = await onEntryFill(order);
-      await sendMessage(encodeTrades(responseMessage));
+      await sendMessage(encodeCalculateData(responseMessage));
     }
   } catch (e) {
     await sendMessage(`Queue error: ${e.message}`);

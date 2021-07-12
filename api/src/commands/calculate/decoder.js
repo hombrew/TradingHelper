@@ -2,16 +2,7 @@ const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
 } = require("../../config/constants");
-const { COMMANDS } = require("../../config/commands");
 const { fixedParseFloat } = require("../../utils");
-
-function checkCommand(command) {
-  const isValid = COMMANDS.includes(command);
-
-  if (!isValid) {
-    throw new Error(`Command '${command}' is not valid.`);
-  }
-}
 
 function checkData(data) {
   const keys = [
@@ -87,10 +78,8 @@ function getRealKey(key) {
   return keys[key] || key;
 }
 
-function decodeMessage(message) {
-  const [[command], ...rest] = message
-    .split("\n")
-    .map((sentence) => sentence.split(":"));
+function decodeCalculateData(message) {
+  const rest = message.map((sentence) => sentence.split(":"));
 
   const values = rest.reduce((acc, [key, values]) => {
     const separator = values.includes("-") ? "-" : " ";
@@ -110,7 +99,6 @@ function decodeMessage(message) {
     values.parts = ["1"];
   }
 
-  checkCommand(command);
   checkData(values);
 
   values.symbol = values.symbol[0];
@@ -121,7 +109,7 @@ function decodeMessage(message) {
   values.takeProfits = values.takeProfits.map(fixedParseFloat);
   checkValues(values);
 
-  return [command, values];
+  return values;
 }
 
-module.exports.decodeMessage = decodeMessage;
+module.exports.decodeCalculateData = decodeCalculateData;

@@ -1,7 +1,6 @@
-const { addBy } = require("../../../utils");
-const { ORDER_STATUS_FILLED } = require("../../../config/binance.contracts");
-const { TRADE_DIRECTION_LONG } = require("../../../config/constants");
-const { title } = require("./common");
+const { addBy } = require("../../utils");
+const { ORDER_STATUS_FILLED } = require("../../config/binance.contracts");
+const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 
 function translate(trade) {
   const { symbol, direction, risked, stopLoss, entries, takeProfits } = trade;
@@ -14,7 +13,7 @@ function translate(trade) {
   const getTradeDirection = (trade) =>
     trade.direction === TRADE_DIRECTION_LONG ? "🐂" : "🧸";
 
-  text += `${title(symbol, true)}\n`;
+  text += `*----${symbol}----*\n`;
   text += `${getTradeDirection(trade)} ${direction}\n`;
   text += `🚀 Max risk: ${risked}\n`;
   text += `🏛️ Currently risked: ${currentlyRisked}\n`;
@@ -42,7 +41,7 @@ function translate(trade) {
   return text;
 }
 
-function encodeTrades(trades) {
+function encodeCalculateData(trades) {
   if (!Array.isArray(trades)) {
     trades = [trades];
   }
@@ -50,4 +49,4 @@ function encodeTrades(trades) {
   return trades.map(translate).join("\n\n");
 }
 
-module.exports.encodeTrades = encodeTrades;
+module.exports.encodeCalculateData = encodeCalculateData;

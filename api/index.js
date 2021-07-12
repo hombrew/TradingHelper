@@ -9,7 +9,6 @@ const {
   telegramBot,
   sendMessage,
   checkChatId,
-  decodeMessage,
 } = require("./src/services/telegram");
 const { executeCommand } = require("./src/commands");
 
@@ -25,13 +24,11 @@ app.get("/healthCheck", (req, res) => {
 app.post("/telegram_webhook", async (req, res) => {
   const message = req.body.message || req.body.edited_message;
 
-  let command;
   let data;
 
   try {
     checkChatId(message.chat.id);
-    [command, data] = decodeMessage(message.text);
-    data = await executeCommand(command, data);
+    data = await executeCommand(message.text);
   } catch (e) {
     await telegramBot.sendMessage(message.chat.id, e.message);
     return res.send({ greet: "bye" });
