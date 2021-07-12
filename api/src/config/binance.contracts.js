@@ -243,3 +243,8 @@ module.exports.ORDER_STATUS = [
 module.exports.TRADE_STATUS_CREATED = "CREATED";
 module.exports.TRADE_STATUS_IN_PROGRESS = "IN_PROGRESS";
 module.exports.TRADE_STATUS_COMPLETED = "COMPLETED";
+module.exports.TRADE_STATUS = [
+  module.exports.TRADE_STATUS_CREATED,
+  module.exports.TRADE_STATUS_IN_PROGRESS,
+  module.exports.TRADE_STATUS_COMPLETED,
+];

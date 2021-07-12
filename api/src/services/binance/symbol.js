@@ -1,5 +1,5 @@
 const { binance } = require("./api");
-const { getOpenPositions } = require("./position");
+const { getOpenPositions } = require("./order");
 
 function filterBySymbol(list, symbol) {
   return list.filter((item) => item.symbol === symbol);

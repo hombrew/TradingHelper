@@ -1,8 +1,9 @@
 const {
   ORDER_TYPE_LIMIT,
   ORDER_TYPE_STOP_MARKET,
-  ORDER_TYPE_TAKE_PROFIT,
+  ORDER_TYPE_TAKE_PROFIT_MARKET,
   ORDER_STATUS_NEW,
+  TRADE_STATUS_CREATED,
 } = require("../config/binance.contracts");
 
 function buildOrder(symbol, type, price) {
@@ -20,7 +21,7 @@ function buildOrder(symbol, type, price) {
 const orderTypeMap = {
   stopLoss: ORDER_TYPE_STOP_MARKET,
   entries: ORDER_TYPE_LIMIT,
-  takeProfits: ORDER_TYPE_TAKE_PROFIT,
+  takeProfits: ORDER_TYPE_TAKE_PROFIT_MARKET,
 };
 
 function formatUnprocessedTrade(unprocessedTrade) {
@@ -39,7 +40,7 @@ function formatUnprocessedTrade(unprocessedTrade) {
 
       return trade;
     },
-    { ...unprocessedTrade }
+    { ...unprocessedTrade, status: TRADE_STATUS_CREATED }
   );
 }
 

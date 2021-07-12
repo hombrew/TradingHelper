@@ -18,7 +18,7 @@ function getNeededLiquidation(direction, price, stopLoss) {
   }
 
   return (
-    price + (100 * (stopLoss - price.price)) / BINANCE_CALCULATOR_LIQ_DELTA
+    price + (100 * (stopLoss.price - price)) / BINANCE_CALCULATOR_LIQ_DELTA
   );
 }
 
@@ -79,7 +79,7 @@ function getEntryOrderConfiguration(entryOrder, risked, direction, stopLoss) {
       return [leverage, maxLeveragedPos, calculatedLiquidation];
     })
     .filter(([, , calculatedLiquidation]) =>
-      side > 0
+      isLong
         ? calculatedLiquidation <= liquidation
         : calculatedLiquidation >= liquidation
     );
@@ -103,19 +103,19 @@ function getEntryOrderConfiguration(entryOrder, risked, direction, stopLoss) {
   };
 }
 
-function fixTradeEntries(minimum, entries) {
+function fixTradeEntries(minimum, entries, takeProfitsLength) {
   const { minQty, maxQty, tickSize, stepSize } = minimum;
 
   return entries.map((order) => {
     if (order.position < minQty) {
       throw new Error(
-        `Position size of '${order.position}' is less than the minimum quantity allowed of ${minQty} per trade`
+        `Position size of '${order.position}' per entry is less than the minimum quantity allowed of ${minQty} per trade`
       );
     }
 
     if (order.position > maxQty) {
       throw new Error(
-        `Position size of '${order.position}' exceeds the maximum quantity allowed of ${maxQty} per trade`
+        `Position size of '${order.position}' per entry exceeds the maximum quantity allowed of ${maxQty} per trade`
       );
     }
 
@@ -123,6 +123,12 @@ function fixTradeEntries(minimum, entries) {
     const price = truncate(order.price, tickSize);
     const margin = (position * price) / order.leverage;
     const risked = (BINANCE_CALCULATOR_LIQ_DELTA * margin) / 100;
+
+    if (truncate(position / takeProfitsLength, stepSize) < minQty) {
+      throw new Error(
+        `The current position per entry (${position}) cannot be divided between that amount of take profits. Try lowering the amount of take profits or incrementing the amount of risked money.`
+      );
+    }
 
     return {
       ...order,
@@ -135,17 +141,24 @@ function fixTradeEntries(minimum, entries) {
   });
 }
 
+function fixPrice(minimum, order) {
+  const { tickSize } = minimum;
+  return {
+    ...order,
+    price: truncate(order.price, tickSize),
+  };
+}
+
 async function fixTradeConfig(trade) {
   const minimum = await getMinimum(trade.symbol);
-  const entries = fixTradeEntries(minimum, trade.entries);
+  const takeProfits = trade.takeProfits.map(fixPrice.bind(null, minimum));
+  const entries = fixTradeEntries(minimum, trade.entries, takeProfits.length);
   return {
     ...trade,
     risked: addBy(entries, ({ risked }) => risked),
     entries,
-    stopLoss: {
-      ...trade.stopLoss,
-      price: truncate(trade.stopLoss.price, minimum.tickSize),
-    },
+    takeProfits,
+    stopLoss: fixPrice(minimum, trade.stopLoss),
   };
 }
 

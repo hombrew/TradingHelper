@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const {
   contracts,
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_TAKE_PROFIT,
+  ORDER_TYPE_TAKE_PROFIT_MARKET,
   ORDER_TYPE_STOP_MARKET,
+  TRADE_STATUS,
 } = require("../../../config/binance.contracts");
 
 const { TRADE_DIRECTIONS } = require("../../../config/constants");
@@ -22,6 +23,11 @@ const tradeSchema = new mongoose.Schema({
     enum: TRADE_DIRECTIONS,
   },
   risked: Number,
+  status: {
+    type: String,
+    uppercase: true,
+    enum: TRADE_STATUS,
+  },
   takeProfits: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -42,7 +48,7 @@ const tradeSchema = new mongoose.Schema({
 
 const option = {
   [ORDER_TYPE_LIMIT]: "entries",
-  [ORDER_TYPE_TAKE_PROFIT]: "takeProfits",
+  [ORDER_TYPE_TAKE_PROFIT_MARKET]: "takeProfits",
   [ORDER_TYPE_STOP_MARKET]: "stopLoss",
 };
 
@@ -66,19 +72,6 @@ tradeSchema.methods.addOrders = async function (orders) {
     })
   );
   return this.save();
-};
-
-tradeSchema.statics.onEntryFill = async function (entryId) {
-  const entry = await mongoose
-    .model("Order")
-    .findOne({ orderId: entryId })
-    .populate({
-      path: "trade",
-      populate: [{ path: "takeProfits" }, { path: "stopLoss" }],
-    })
-    .exec();
-  const trade = entry.trade;
-  console.log("ON ENTRY FILL TRADE", trade);
 };
 
 const Trade = mongoose.model("Trade", tradeSchema);

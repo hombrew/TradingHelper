@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "supervisor index.js",
     "start": "node index.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage --detectOpenHandles"
   },
   "author": "Manuel Maldonado",
   "license": "ISC",

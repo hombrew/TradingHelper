@@ -3,6 +3,7 @@ const {
   TRADE_DIRECTION_SHORT,
 } = require("../../config/constants");
 const { COMMANDS } = require("../../config/commands");
+const { fixedParseFloat } = require("../../utils");
 
 function checkCommand(command) {
   const isValid = COMMANDS.includes(command);
@@ -113,11 +114,11 @@ function decodeMessage(message) {
   checkData(values);
 
   values.symbol = values.symbol[0];
-  values.risked = parseFloat(values.risked[0]);
-  values.entries = values.entries.map(parseFloat);
+  values.risked = fixedParseFloat(values.risked[0]);
+  values.entries = values.entries.map(fixedParseFloat);
   values.parts = parseInt(values.parts[0]);
-  values.stopLoss = parseFloat(values.stopLoss[0]);
-  values.takeProfits = values.takeProfits.map(parseFloat);
+  values.stopLoss = fixedParseFloat(values.stopLoss[0]);
+  values.takeProfits = values.takeProfits.map(fixedParseFloat);
   checkValues(values);
 
   return [command, values];

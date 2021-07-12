@@ -1,4 +1,4 @@
-const { openPosition } = require("../../services/binance");
+const { upsertOrder } = require("../../services/binance");
 const { sendMessage } = require("../../services/telegram");
 const { Trade, Order } = require("../../services/db");
 const { calculateTradeEntries } = require("../calculate");
@@ -7,7 +7,7 @@ async function addBinanceOrders(direction, orders) {
   let ordersResponses = [];
   for (const order of orders) {
     try {
-      const response = await openPosition(direction, order);
+      const response = await upsertOrder(direction, order);
       ordersResponses.push({ ...order, orderId: response.orderId });
     } catch (e) {
       throw new Error(

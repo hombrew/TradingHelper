@@ -1,3 +1,5 @@
+const { fixedParseFloat } = require("./fixedParseFloat");
+
 function toFixed(number, fixed) {
   var re = new RegExp("^-?\\d+(?:.\\d{0," + (fixed || -1) + "})?");
   return number.toString().match(re)[0];
@@ -11,7 +13,7 @@ function countDecimals(number) {
 function truncate(number, base) {
   const decimals = countDecimals(base);
   const truncated = toFixed(number, decimals);
-  return parseFloat(truncated);
+  return fixedParseFloat(truncated);
 }
 
 module.exports.truncate = truncate;
