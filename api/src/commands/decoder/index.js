@@ -1,4 +1,4 @@
-const { COMMANDS } = require("../config/commands");
+const { COMMANDS } = require("../../config/commands");
 
 function checkCommand(command) {
   const isValid = COMMANDS.includes(command);
@@ -9,8 +9,10 @@ function checkCommand(command) {
 }
 
 function decodeCommand(message) {
-  let [command, ...rest] = message.split("\n");
-  command = command.trim();
+  let [command, ...rest] = message
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
 
   checkCommand(command);
 

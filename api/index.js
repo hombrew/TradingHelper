@@ -31,12 +31,12 @@ app.post("/telegram_webhook", async (req, res) => {
     data = await executeCommand(message.text);
   } catch (e) {
     await telegramBot.sendMessage(message.chat.id, e.message);
-    return res.send({ greet: "bye" });
+    return res.send({ error: e.message });
   }
 
   await sendMessage(data);
 
-  return res.send({ greet: "hello" });
+  return res.send({ data });
 });
 
 app.listen(5000, () => {
