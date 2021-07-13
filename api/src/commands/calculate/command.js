@@ -22,16 +22,15 @@ function generateDCAEntryOrders(entries, parts, direction) {
     return [entries[0], ...entryOrders];
   }
 
-  if (direction === TRADE_DIRECTION_SHORT) {
-    const step = (entries[1].price - entries[0].price) / (parts - 1);
+  // SHORT
+  const step = (entries[1].price - entries[0].price) / (parts - 1);
 
-    const entryOrders = [...Array(parts - 1).keys()].map((_, index) => {
-      const price = entries[0].price + step * (index + 1);
-      return { ...entries[0], price };
-    });
+  const entryOrders = [...Array(parts - 1).keys()].map((_, index) => {
+    const price = entries[0].price + step * (index + 1);
+    return { ...entries[0], price };
+  });
 
-    return [entries[0], ...entryOrders];
-  }
+  return [entries[0], ...entryOrders];
 }
 
 function calculateTradeEntries(unprocessedTrade) {

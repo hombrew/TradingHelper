@@ -3,6 +3,7 @@ const {
   ORDER_STATUS_FILLED,
 } = require("../config/binance.contracts");
 const { binance } = require("../services/binance");
+const { connectDB } = require("../services/db");
 const { sendMessage } = require("../services/telegram");
 const { encodeCalculateData } = require("../commands/calculate");
 const { Queue } = require("./Queue");
@@ -23,7 +24,9 @@ Queue.on(async ({ order }) => {
   }
 });
 
-function onInit() {
+async function onInit() {
+  await connectDB();
+
   binance.websockets.userFutureData(
     null, // margin_call_callback
     null, // account_update_callback

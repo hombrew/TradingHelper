@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 const {
   TRADE_STATUS_IN_PROGRESS,
   ORDER_STATUS_NEW,
-} = require("../config/binance.contracts");
+} = require("../../config/binance.contracts");
 const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
-} = require("../config/constants");
-const { upsertOrder, getMinimum } = require("../services/binance");
-const { truncate, fixedParseFloat } = require("../utils");
+} = require("../../config/constants");
+const { upsertOrder, getMinimum } = require("../../services/binance");
+const { truncate, fixedParseFloat } = require("../../utils");
 
 async function processOrder(order, direction, positionIncrement) {
   order.position = fixedParseFloat(order.position + positionIncrement);
