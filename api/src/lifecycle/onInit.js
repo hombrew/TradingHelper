@@ -1,9 +1,10 @@
 const { binance } = require("../services/binance");
 const { connectDB } = require("../services/db");
 const { promiseFind } = require("../utils");
-const { Queue } = require("./Queue");
+const { Queue } = require("../services/Queue");
 const onEntryFill = require("./onEntryFill");
 const onStopLossFill = require("./onStopLossFill");
+const onTakeProfitFill = require("./onTakeProfitFill");
 
 function tryEventHandler(event) {
   return async function ({ condition, handler, responder, errorHandler }) {
@@ -18,7 +19,9 @@ function tryEventHandler(event) {
 }
 
 Queue.on((event) => {
-  const handlers = [onEntryFill, onStopLossFill].map(tryEventHandler(event));
+  const handlers = [onEntryFill, onStopLossFill, onTakeProfitFill].map(
+    tryEventHandler(event)
+  );
   return promiseFind(handlers, Boolean);
 });
 

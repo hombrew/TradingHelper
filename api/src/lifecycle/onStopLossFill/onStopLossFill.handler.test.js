@@ -61,7 +61,7 @@ describe("onStopLossFillHandler", () => {
   afterEach(async () => await connection.clearDatabase());
   afterAll(async () => await connection.closeDatabase());
 
-  it("should run", async () => {
+  it("should close current trade and its pending orders", async () => {
     await commandCreateLongTrade();
     await onEntryFillByEntryOrder({ price: 31000 });
     await onEntryFillByEntryOrder({ price: 30500 });

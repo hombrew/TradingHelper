@@ -24,7 +24,7 @@ async function onStopLossFillHandler(event) {
     )
     .exec();
 
-  const trade = await mongoose
+  let trade = await mongoose
     .model("Trade")
     .findOneAndUpdate(
       { _id: stopLoss.trade._id },
@@ -49,6 +49,16 @@ async function onStopLossFillHandler(event) {
     order.status = ORDER_STATUS_CANCELLED;
     await order.save();
   }
+
+  trade = await mongoose
+    .model("Trade")
+    .findById(trade._id)
+    .populate("entries")
+    .populate("takeProfits")
+    .populate("stopLoss")
+    .exec();
+
+  return trade.toObject();
 }
 
 module.exports = onStopLossFillHandler;
