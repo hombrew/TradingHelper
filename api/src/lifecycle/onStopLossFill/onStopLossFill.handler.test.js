@@ -12,7 +12,7 @@ const { handler: onStopLossFillHandler } = require(".");
 jest.mock("../../services/binance/api");
 jest.mock("../../services/binance/minimum");
 jest.mock("../../services/binance/order/index");
-jest.mock("../../services/telegram/bot");
+jest.mock("../../services/MessageService/index");
 
 async function expectTakeProfitsStatusToBe(status) {
   const takeProfits = await db.data.findTakeProfits();

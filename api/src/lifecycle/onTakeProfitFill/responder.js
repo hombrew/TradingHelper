@@ -1,8 +1,8 @@
 const { encoder } = require("../../commands/calculate");
-const { sendMessage } = require("../../services/telegram");
+const { MessageService } = require("../../services");
 
 function onTakeProfitResponder(response) {
-  return sendMessage(encoder(response));
+  return MessageService.sendMessage(encoder(response));
 }
 
 module.exports = onTakeProfitResponder;

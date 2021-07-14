@@ -5,11 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const { onInit, onExit } = require("./src/lifecycle");
-const {
-  telegramBot,
-  sendMessage,
-  checkChatId,
-} = require("./src/services/telegram");
+const { MessageService } = require("./src/services");
 const { executeCommand } = require("./src/commands");
 
 const app = express();
@@ -27,14 +23,14 @@ app.post("/telegram_webhook", async (req, res) => {
   let data;
 
   try {
-    checkChatId(message.chat.id);
+    MessageService.checkChatId(message.chat.id);
     data = await executeCommand(message.text);
   } catch (e) {
-    await telegramBot.sendMessage(message.chat.id, e.message);
+    await MessageService.sendMessage(message.chat.id, e.message);
     return res.send({ error: e.message });
   }
 
-  await sendMessage(data);
+  await MessageService.sendMessage(data);
   return res.send({ data });
 });
 
