@@ -1,10 +1,10 @@
 const { db } = require("../../../test.helpers");
-const { createTrade } = require("../../commands/create/command");
+const { handler: createTrade } = require("../../commands/create");
 const {
   ORDER_STATUS_FILLED,
   ORDER_STATUS_NEW,
 } = require("../../config/binance.contracts");
-const { onEntryFill } = require(".");
+const { handler: onEntryFillHandler } = require(".");
 
 jest.mock("../../services/binance/api");
 jest.mock("../../services/binance/minimum");
@@ -16,9 +16,10 @@ function expectPositionAndOrderIdTypeToBe(order, position, orderIdType) {
   expect(typeof order.orderId).toBe(orderIdType);
 }
 
-async function createFilledOrderEventFromDBBy(input = {}) {
+async function onEntryFillByEntryOrder(input = {}) {
   const filledOrders = await db.data.findEntries(input);
-  return db.events.filledEntry(filledOrders[0].toObject());
+  const filledOrderEvent = db.events.filledOrder(filledOrders[0].toObject());
+  return onEntryFillHandler(filledOrderEvent);
 }
 
 function commandCreateLongTrade(input = {}) {
@@ -47,12 +48,7 @@ function commandCreateShortTrade(input = {}) {
   });
 }
 
-async function onEntryFillByEntryOrder(input = {}) {
-  let filledOrderEvent = await createFilledOrderEventFromDBBy(input);
-  return onEntryFill(filledOrderEvent.order);
-}
-
-describe("onEntryFill", () => {
+describe("onEntryFillHandler", () => {
   let connection;
 
   beforeAll(async () => {

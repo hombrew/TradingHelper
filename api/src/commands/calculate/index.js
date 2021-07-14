@@ -1,9 +1,12 @@
-const decoderFile = require("./decoder");
-const encoderFile = require("./encoder");
-const commandFile = require("./command");
+const { COMMAND_CALCULATE } = require("../../config/commands");
+
+const decoder = require("./decoder");
+const encoder = require("./encoder");
+const handler = require("./handler");
 
 module.exports = {
-  ...decoderFile,
-  ...encoderFile,
-  ...commandFile,
+  command: COMMAND_CALCULATE,
+  decoder,
+  handler,
+  encoder,
 };

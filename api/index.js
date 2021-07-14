@@ -35,7 +35,6 @@ app.post("/telegram_webhook", async (req, res) => {
   }
 
   await sendMessage(data);
-
   return res.send({ data });
 });
 

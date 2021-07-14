@@ -1,29 +1,32 @@
-const { COMMAND_CREATE, COMMAND_CALCULATE } = require("../config/commands");
-const { createTrade } = require("./create");
-const {
-  calculateTradeEntries,
-  decodeCalculateData,
-  encodeCalculateData,
-} = require("./calculate");
+const { promiseFind } = require("../utils");
 const { decodeCommand } = require("./decoder");
+const calculate = require("./calculate");
+const create = require("./create");
+
+function tryCommandHandler([currentCommand, encodedData]) {
+  return async function ({ command, decoder, handler, encoder, errorHandler }) {
+    if (currentCommand !== command) return;
+
+    try {
+      const decodedData = await decoder(encodedData);
+      const handledData = await handler(decodedData);
+      return encoder(handledData);
+    } catch (e) {
+      if (errorHandler) errorHandler(e);
+    }
+  };
+}
 
 async function executeCommand(message) {
-  const [command, encodedData] = decodeCommand(message);
+  const decodedCommand = decodeCommand(message);
+  const handlers = [calculate, create].map(tryCommandHandler(decodedCommand));
+  const response = await promiseFind(handlers, Boolean);
 
-  switch (command) {
-    case COMMAND_CALCULATE: {
-      const decodedData = decodeCalculateData(encodedData);
-      const calculated = await calculateTradeEntries(decodedData);
-      return encodeCalculateData(calculated);
-    }
-    case COMMAND_CREATE: {
-      const decodedData = decodeCalculateData(encodedData);
-      const created = await createTrade(decodedData);
-      return encodeCalculateData(created);
-    }
-    default:
-      throw new Error(`Command '${command}' is not implemented yet`);
+  if (!response) {
+    throw new Error(`Command '${decodedCommand[0]}' is not implemented yet`);
   }
+
+  return response;
 }
 
 module.exports.executeCommand = executeCommand;

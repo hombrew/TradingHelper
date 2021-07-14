@@ -1,5 +1,12 @@
-const commandFile = require("./command");
+const { COMMAND_CREATE } = require("../../config/commands");
+
+const decoder = require("./decoder");
+const encoder = require("./encoder");
+const handler = require("./handler");
 
 module.exports = {
-  ...commandFile,
+  command: COMMAND_CREATE,
+  decoder,
+  handler,
+  encoder,
 };

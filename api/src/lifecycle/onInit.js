@@ -1,27 +1,25 @@
-const {
-  ORDER_TYPE_LIMIT,
-  ORDER_STATUS_FILLED,
-} = require("../config/binance.contracts");
 const { binance } = require("../services/binance");
 const { connectDB } = require("../services/db");
-const { sendMessage } = require("../services/telegram");
-const { encodeCalculateData } = require("../commands/calculate");
+const { promiseFind } = require("../utils");
 const { Queue } = require("./Queue");
-const { onEntryFill } = require("./onEntryFill");
+const onEntryFill = require("./onEntryFill");
+const onStopLossFill = require("./onStopLossFill");
 
-Queue.on(async ({ order }) => {
-  const isFilledEntry =
-    order.orderStatus === ORDER_STATUS_FILLED &&
-    order.orderType === ORDER_TYPE_LIMIT;
-
-  try {
-    if (isFilledEntry) {
-      const responseMessage = await onEntryFill(order);
-      await sendMessage(encodeCalculateData(responseMessage));
+function tryEventHandler(event) {
+  return async function ({ condition, handler, responder, errorHandler }) {
+    if (!condition(event)) return;
+    try {
+      const repsonse = await handler(event);
+      return responder(repsonse);
+    } catch (e) {
+      if (errorHandler) errorHandler(e);
     }
-  } catch (e) {
-    await sendMessage(`Queue error: ${e.message}`);
-  }
+  };
+}
+
+Queue.on((event) => {
+  const handlers = [onEntryFill, onStopLossFill].map(tryEventHandler(event));
+  return promiseFind(handlers, Boolean);
 });
 
 async function onInit() {

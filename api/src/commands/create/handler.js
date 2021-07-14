@@ -1,7 +1,7 @@
 const { upsertOrder } = require("../../services/binance");
 const { sendMessage } = require("../../services/telegram");
 const { Trade, Order } = require("../../services/db");
-const { calculateTradeEntries } = require("../calculate");
+const calculateTradeEntries = require("../calculate").handler;
 
 async function addBinanceOrders(direction, orders) {
   let ordersResponses = [];
@@ -56,4 +56,4 @@ async function createTrade(unprocessedTrade) {
   return saveTrade(fixedTrade);
 }
 
-module.exports.createTrade = createTrade;
+module.exports = createTrade;

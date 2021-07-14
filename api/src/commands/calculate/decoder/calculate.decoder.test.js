@@ -1,4 +1,4 @@
-const { decodeCalculateData } = require(".");
+const decodeCalculateData = require(".");
 
 describe("calculate.decoder", () => {
   describe("Fail", () => {

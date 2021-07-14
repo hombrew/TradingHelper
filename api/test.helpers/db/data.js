@@ -77,6 +77,12 @@ function createTrade(input = {}) {
   });
 }
 
+function findTrade(input = {}) {
+  return Trade.findOne({
+    ...input,
+  });
+}
+
 module.exports.createEntryOrder = createEntryOrder;
 module.exports.createStopLossOrder = createStopLossOrder;
 module.exports.createTakeProfitOrder = createTakeProfitOrder;
@@ -85,3 +91,4 @@ module.exports.findTakeProfits = findTakeProfits;
 module.exports.findEntries = findEntries;
 
 module.exports.createTrade = createTrade;
+module.exports.findTrade = findTrade;

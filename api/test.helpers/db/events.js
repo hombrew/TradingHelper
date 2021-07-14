@@ -16,7 +16,7 @@ function transformInput(input) {
   }, {});
 }
 
-function filledEntry(input = {}) {
+function filledOrder(input = {}) {
   return {
     eventType: "ORDER_TRADE_UPDATE",
     eventTime: 1625684193471,
@@ -57,4 +57,4 @@ function filledEntry(input = {}) {
   };
 }
 
-module.exports.filledEntry = filledEntry;
+module.exports.filledOrder = filledOrder;

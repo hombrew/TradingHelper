@@ -1,7 +1,4 @@
-const {
-  TRADE_DIRECTION_LONG,
-  TRADE_DIRECTION_SHORT,
-} = require("../../config/constants");
+const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 const {
   getEntryOrderConfiguration,
   fixTradeConfig,
@@ -57,4 +54,4 @@ function calculateTradeEntries(unprocessedTrade) {
   return fixTradeConfig(configuredTrade);
 }
 
-module.exports.calculateTradeEntries = calculateTradeEntries;
+module.exports = calculateTradeEntries;

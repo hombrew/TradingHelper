@@ -163,4 +163,4 @@ function decodeCalculateData(message) {
   return values;
 }
 
-module.exports.decodeCalculateData = decodeCalculateData;
+module.exports = decodeCalculateData;

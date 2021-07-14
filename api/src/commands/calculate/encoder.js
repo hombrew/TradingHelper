@@ -49,4 +49,4 @@ function encodeCalculateData(trades) {
   return trades.map(translate).join("\n\n");
 }
 
-module.exports.encodeCalculateData = encodeCalculateData;
+module.exports = encodeCalculateData;
