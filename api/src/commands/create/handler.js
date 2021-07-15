@@ -1,13 +1,12 @@
-const { MessageService } = require("../../services");
-const { upsertOrder } = require("../../services/binance");
+const { MessageService, ExchangeService } = require("../../services");
 const { Trade, Order } = require("../../services/db");
 const calculateTradeEntries = require("../calculate").handler;
 
-async function addBinanceOrders(direction, orders) {
+async function addExchangeOrders(direction, orders) {
   let ordersResponses = [];
   for (const order of orders) {
     try {
-      const response = await upsertOrder(direction, order);
+      const response = await ExchangeService.upsertOrder(direction, order);
       ordersResponses.push({ ...order, orderId: response.orderId });
     } catch (e) {
       throw new Error(
@@ -47,7 +46,7 @@ async function createTrade(unprocessedTrade) {
 
   const fixedTrade = await calculateTradeEntries(unprocessedTrade);
 
-  const ordersResponses = await addBinanceOrders(
+  const ordersResponses = await addExchangeOrders(
     fixedTrade.direction,
     fixedTrade.entries
   );

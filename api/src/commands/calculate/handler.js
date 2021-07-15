@@ -1,8 +1,5 @@
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
-const {
-  getEntryOrderConfiguration,
-  fixTradeConfig,
-} = require("../../services/binance");
+const { ExchangeService } = require("../../services");
 const { formatUnprocessedTrade } = require("../formatters");
 
 function generateDCAEntryOrders(entries, parts, direction) {
@@ -38,7 +35,7 @@ function calculateTradeEntries(unprocessedTrade) {
   const riskedPerTrade = risked / theoricEntryOrders.length;
 
   const entryOrders = theoricEntryOrders.map((entryOrder) => {
-    return getEntryOrderConfiguration(
+    return ExchangeService.prepareEntry(
       entryOrder,
       riskedPerTrade,
       direction,
@@ -51,7 +48,7 @@ function calculateTradeEntries(unprocessedTrade) {
     entries: entryOrders,
   };
 
-  return fixTradeConfig(configuredTrade);
+  return ExchangeService.fixTrade(configuredTrade);
 }
 
 module.exports = calculateTradeEntries;

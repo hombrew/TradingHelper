@@ -4,7 +4,6 @@ const {
 } = require("../../config/constants");
 const { contracts } = require("../../config/binance.contracts");
 const { truncate, addBy } = require("../../utils");
-const { getMinimum } = require("./minimum");
 
 function getNeededMargin(risked) {
   return (100 * risked) / BINANCE_CALCULATOR_LIQ_DELTA;
@@ -150,7 +149,7 @@ function fixPrice(minimum, order) {
 }
 
 async function fixTradeConfig(trade) {
-  const minimum = await getMinimum(trade.symbol);
+  const minimum = await this.getMinimum(trade.symbol);
   const takeProfits = trade.takeProfits.map(fixPrice.bind(null, minimum));
   const entries = fixTradeEntries(minimum, trade.entries, takeProfits.length);
   return {

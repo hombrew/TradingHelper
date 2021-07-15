@@ -1,15 +1,15 @@
 const { flushPromises, mockConsole } = require("../../../test.helpers");
 const { sleep } = require("../../utils");
-const { Queue } = require(".");
+const { QueueService } = require(".");
 
 jest.mock("console");
 
 function expectQueueLengthToBe(length) {
-  expect(Queue.getQueued()).toHaveLength(length);
+  expect(QueueService.getQueued()).toHaveLength(length);
 }
 
 function expectQueueToBeRunning(state) {
-  expect(Queue.isRunning()).toBe(state);
+  expect(QueueService.isRunning()).toBe(state);
 }
 
 function addNtoQueue(items) {
@@ -23,12 +23,12 @@ function addNtoQueue(items) {
     toAdd = [...Array(items).keys()];
   }
 
-  toAdd.forEach(Queue.add.bind(Queue));
+  toAdd.forEach(QueueService.add.bind(QueueService));
 }
 
 describe("Queue", () => {
   beforeEach(async () => {
-    Queue.reset();
+    QueueService.reset();
     jest.useRealTimers();
   });
 
@@ -40,7 +40,7 @@ describe("Queue", () => {
 
   it("should not call callback until items are added to the queue", async () => {
     const callback = jest.fn();
-    Queue.on(callback);
+    QueueService.on(callback);
     expect(callback).toHaveBeenCalledTimes(0);
     addNtoQueue(2);
     expect(callback).not.toHaveBeenCalledTimes(2);
@@ -51,7 +51,7 @@ describe("Queue", () => {
 
   it("should end up calling all items no matter when they were added", async () => {
     const callback = jest.fn();
-    Queue.on(callback);
+    QueueService.on(callback);
     expectQueueToBeRunning(false);
     addNtoQueue(4);
     expectQueueToBeRunning(true);
@@ -64,7 +64,7 @@ describe("Queue", () => {
   it("should wait for a run to end to start the next one", async () => {
     jest.useFakeTimers();
     const callback = jest.fn().mockImplementation(sleep.bind(null, 1000));
-    Queue.on(callback);
+    QueueService.on(callback);
     expectQueueToBeRunning(false);
     addNtoQueue(4);
     expect(callback).toHaveBeenCalledTimes(1);
@@ -80,12 +80,12 @@ describe("Queue", () => {
   it("should be able to reset the queue while on a run", async () => {
     jest.useFakeTimers();
     const callback = jest.fn().mockImplementation(sleep.bind(null, 1000));
-    Queue.on(callback);
+    QueueService.on(callback);
     expectQueueToBeRunning(false);
     addNtoQueue(4);
     expectQueueToBeRunning(true);
     expectQueueLengthToBe(3);
-    Queue.reset();
+    QueueService.reset();
     jest.advanceTimersByTime(1000);
     await Promise.resolve();
     expectQueueToBeRunning(false);
@@ -98,7 +98,7 @@ describe("Queue", () => {
     const callback = jest
       .fn()
       .mockRejectedValue(new Error("Houston we have a problem"));
-    Queue.on(callback);
+    QueueService.on(callback);
     addNtoQueue(1);
     await flushPromises();
     expect(spy).toHaveBeenNthCalledWith(

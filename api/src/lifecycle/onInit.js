@@ -1,7 +1,6 @@
-const { binance } = require("../services/binance");
 const { connectDB } = require("../services/db");
 const { promiseFind } = require("../utils");
-const { Queue } = require("../services/Queue");
+const { QueueService, ExchangeService } = require("../services");
 const onEntryFill = require("./onEntryFill");
 const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
@@ -18,7 +17,7 @@ function tryEventHandler(event) {
   };
 }
 
-Queue.on((event) => {
+QueueService.on((event) => {
   const handlers = [onEntryFill, onStopLossFill, onTakeProfitFill].map(
     tryEventHandler(event)
   );
@@ -27,14 +26,7 @@ Queue.on((event) => {
 
 async function onInit() {
   await connectDB();
-
-  binance.websockets.userFutureData(
-    null, // margin_call_callback
-    null, // account_update_callback
-    Queue.add.bind(Queue), // order_update_callback
-    null, // subscribed_callback
-    null // account_config_update_callback
-  );
+  ExchangeService.onOrderUpdate(QueueService.add.bind(QueueService));
 }
 
 module.exports.onInit = onInit;

@@ -4,13 +4,12 @@ const {
   ORDER_TYPE_STOP_MARKET,
   ORDER_TYPE_TAKE_PROFIT_MARKET,
 } = require("../../../config/binance.contracts");
-const { binance } = require("../api");
 const { sleep } = require("../../../utils");
 
-async function getOpenPositions() {
-  const allPositions = await binance.futuresPositionRisk();
-  return allPositions.filter(({ positionAmt }) => Number(positionAmt) > 0);
-}
+// async function getOpenPositions() {
+//   const allPositions = await binance.futuresPositionRisk();
+//   return allPositions.filter(({ positionAmt }) => Number(positionAmt) > 0);
+// }
 
 const buy = {
   side: "BUY",
@@ -31,14 +30,14 @@ async function upsertOrder(direction, order) {
   let response;
   try {
     if (orderId) {
-      await binance.futuresCancel(symbol, { orderId });
+      await this.binance.futuresCancel(symbol, { orderId });
     }
 
     const options = { type };
 
     if (type === ORDER_TYPE_LIMIT) {
-      await binance.futuresMarginType(symbol, "ISOLATED");
-      await binance.futuresLeverage(symbol, leverage);
+      await this.binance.futuresMarginType(symbol, "ISOLATED");
+      await this.binance.futuresLeverage(symbol, leverage);
     }
 
     if (type === ORDER_TYPE_STOP_MARKET) {
@@ -53,7 +52,7 @@ async function upsertOrder(direction, order) {
       price = false;
     }
 
-    response = await binance[orderDirection.method](
+    response = await this.binance[orderDirection.method](
       symbol,
       position,
       price,
@@ -64,10 +63,10 @@ async function upsertOrder(direction, order) {
     throw e;
   }
 
-  await sleep(500);
+  await sleep(300);
 
   return response;
 }
 
-module.exports.getOpenPositions = getOpenPositions;
+// module.exports.getOpenPositions = getOpenPositions;
 module.exports.upsertOrder = upsertOrder;

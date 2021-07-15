@@ -7,12 +7,15 @@ const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
 } = require("../../config/constants");
-const { upsertOrder, getMinimum } = require("../../services/binance");
+const { ExchangeService } = require("../../services");
 const { truncate, fixedParseFloat } = require("../../utils");
 
 async function processOrder(order, direction, positionIncrement) {
   order.position = fixedParseFloat(order.position + positionIncrement);
-  const orderResponse = await upsertOrder(direction, order.toObject());
+  const orderResponse = await ExchangeService.upsertOrder(
+    direction,
+    order.toObject()
+  );
   order.orderId = String(orderResponse.orderId);
   await order.save();
 }
@@ -20,7 +23,7 @@ async function processOrder(order, direction, positionIncrement) {
 async function onEntryFillHandler(event) {
   const entryObj = event.order;
 
-  const { stepSize } = await getMinimum(entryObj.symbol);
+  const { stepSize } = await ExchangeService.getMinimum(entryObj.symbol);
 
   const entry = await mongoose
     .model("Order")

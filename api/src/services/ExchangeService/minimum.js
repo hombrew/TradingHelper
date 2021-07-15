@@ -1,7 +1,5 @@
-const { binance } = require("./api");
-
 async function getMinimums() {
-  const data = await binance.futuresExchangeInfo();
+  const data = await this.binance.futuresExchangeInfo();
 
   const minimums = data.symbols.reduce((response, symbol) => {
     const filters = symbol.filters.filter(
@@ -28,9 +26,8 @@ async function getMinimums() {
 }
 
 async function getMinimum(symbol) {
-  const minimums = await getMinimums();
+  const minimums = await getMinimums.call(this);
   return minimums[symbol.toUpperCase()];
 }
 
-module.exports.getMinimums = getMinimums;
 module.exports.getMinimum = getMinimum;

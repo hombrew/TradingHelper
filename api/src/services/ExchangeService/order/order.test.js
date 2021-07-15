@@ -8,10 +8,17 @@ const {
   TRADE_DIRECTION_SHORT,
 } = require("../../../config/constants");
 const { upsertOrder } = require(".");
-const { binance } = require("../api");
 const { flushPromises } = require("../../../../test.helpers");
 
-jest.mock("../api");
+const bw = {
+  binance: {
+    futuresCancel: jest.fn(),
+    futuresBuy: jest.fn(),
+    futuresMarginType: jest.fn(),
+    futuresLeverage: jest.fn(),
+    futuresSell: jest.fn(),
+  },
+};
 
 describe("upsertOrder", () => {
   beforeEach(() => {
@@ -27,10 +34,13 @@ describe("upsertOrder", () => {
   };
 
   it("should first cancel an order if it already existed", async () => {
-    upsertOrder(TRADE_DIRECTION_LONG, { ...mockOrder, orderId: 12346 });
+    upsertOrder.call(bw, TRADE_DIRECTION_LONG, {
+      ...mockOrder,
+      orderId: 12346,
+    });
     await flushPromises();
-    expect(binance.futuresCancel).toHaveBeenCalledTimes(1);
-    expect(binance.futuresBuy).toHaveBeenNthCalledWith(
+    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(1);
+    expect(bw.binance.futuresBuy).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
       mockOrder.position,
@@ -40,20 +50,20 @@ describe("upsertOrder", () => {
   });
 
   it("should configure leverage if it's an entry", async () => {
-    upsertOrder(TRADE_DIRECTION_SHORT, mockOrder);
+    upsertOrder.call(bw, TRADE_DIRECTION_SHORT, mockOrder);
     await flushPromises();
-    expect(binance.futuresCancel).toHaveBeenCalledTimes(0);
-    expect(binance.futuresMarginType).toHaveBeenNthCalledWith(
+    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresMarginType).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
       "ISOLATED"
     );
-    expect(binance.futuresLeverage).toHaveBeenNthCalledWith(
+    expect(bw.binance.futuresLeverage).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
       mockOrder.leverage
     );
-    expect(binance.futuresSell).toHaveBeenNthCalledWith(
+    expect(bw.binance.futuresSell).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
       mockOrder.position,
@@ -64,12 +74,12 @@ describe("upsertOrder", () => {
 
   it("should close position if it's a stop loss", async () => {
     const order = { ...mockOrder, type: ORDER_TYPE_STOP_MARKET };
-    upsertOrder(TRADE_DIRECTION_LONG, order);
+    upsertOrder.call(bw, TRADE_DIRECTION_LONG, order);
     await flushPromises();
-    expect(binance.futuresCancel).toHaveBeenCalledTimes(0);
-    expect(binance.futuresMarginType).toHaveBeenCalledTimes(0);
-    expect(binance.futuresLeverage).toHaveBeenCalledTimes(0);
-    expect(binance.futuresBuy).toHaveBeenNthCalledWith(
+    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresLeverage).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresBuy).toHaveBeenNthCalledWith(
       1,
       order.symbol,
       order.position,
@@ -80,12 +90,12 @@ describe("upsertOrder", () => {
 
   it("should reduce only if it's a take profit", async () => {
     const order = { ...mockOrder, type: ORDER_TYPE_TAKE_PROFIT_MARKET };
-    upsertOrder(TRADE_DIRECTION_SHORT, order);
+    upsertOrder.call(bw, TRADE_DIRECTION_SHORT, order);
     await flushPromises();
-    expect(binance.futuresCancel).toHaveBeenCalledTimes(0);
-    expect(binance.futuresMarginType).toHaveBeenCalledTimes(0);
-    expect(binance.futuresLeverage).toHaveBeenCalledTimes(0);
-    expect(binance.futuresSell).toHaveBeenNthCalledWith(
+    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresLeverage).toHaveBeenCalledTimes(0);
+    expect(bw.binance.futuresSell).toHaveBeenNthCalledWith(
       1,
       order.symbol,
       order.position,

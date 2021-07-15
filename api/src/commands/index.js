@@ -4,16 +4,12 @@ const calculate = require("./calculate");
 const create = require("./create");
 
 function tryCommandHandler([currentCommand, encodedData]) {
-  return async function ({ command, decoder, handler, encoder, errorHandler }) {
+  return async function ({ command, decoder, handler, encoder }) {
     if (currentCommand !== command) return;
-
-    try {
-      const decodedData = await decoder(encodedData);
-      const handledData = await handler(decodedData);
-      return encoder(handledData);
-    } catch (e) {
-      if (errorHandler) errorHandler(e);
-    }
+    const decodedData = await decoder(encodedData);
+    const handledData = await handler(decodedData);
+    const encoded = encoder(handledData);
+    return encoded;
   };
 }
 

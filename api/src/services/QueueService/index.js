@@ -1,4 +1,4 @@
-class Queue {
+class QueueService {
   _callback = null;
   _content = [];
   _isRunning = false;
@@ -72,4 +72,4 @@ class Queue {
   }
 }
 
-module.exports.Queue = new Queue();
+module.exports.QueueService = new QueueService();

@@ -1,8 +1,7 @@
-const { binance } = require("../services/binance");
+const { ExchangeService } = require("../services");
 
 function exitHandler() {
-  const subscriptions = binance.websockets.subscriptions();
-  Object.keys(subscriptions).forEach(binance.websockets.terminate);
+  ExchangeService.terminateSuscriptions();
 }
 
 function onExit() {

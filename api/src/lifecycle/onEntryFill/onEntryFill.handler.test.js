@@ -6,10 +6,8 @@ const {
 } = require("../../config/binance.contracts");
 const { handler: onEntryFillHandler } = require(".");
 
-jest.mock("../../services/binance/api");
-jest.mock("../../services/binance/minimum");
-jest.mock("../../services/binance/order/index");
-jest.mock("../../services/MessageService/index");
+jest.mock("../../services/ExchangeService/ExchangeService");
+jest.mock("../../services/MessageService/MessageService");
 
 function expectPositionAndOrderIdTypeToBe(order, position, orderIdType) {
   expect(order.position).toBe(position);
@@ -62,8 +60,6 @@ describe("onEntryFillHandler", () => {
   describe("LONG", () => {
     it("should create stopLoss and takeProfit orders", async () => {
       await commandCreateLongTrade();
-
-      // console.log("all entries", await db.data.findEntries());
 
       let takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0, "undefined");

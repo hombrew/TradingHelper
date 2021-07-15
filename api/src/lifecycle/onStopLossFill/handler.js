@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { binance } = require("../../services/binance");
+const { ExchangeService } = require("../../services");
 const {
   TRADE_STATUS_COMPLETED,
   ORDER_STATUS_NEW,
@@ -43,7 +43,7 @@ async function onStopLossFillHandler(event) {
   for (const order of nonFilledOrders) {
     const { orderId, symbol } = order;
     if (orderId) {
-      await binance.futuresCancel(symbol, { orderId });
+      await ExchangeService.cancelOrder(symbol, { orderId });
     }
 
     order.status = ORDER_STATUS_CANCELLED;

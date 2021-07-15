@@ -9,10 +9,8 @@ const { handler: createTrade } = require("../../commands/create");
 const { handler: onEntryFillHandler } = require("../onEntryFill");
 const { handler: onStopLossFillHandler } = require(".");
 
-jest.mock("../../services/binance/api");
-jest.mock("../../services/binance/minimum");
-jest.mock("../../services/binance/order/index");
-jest.mock("../../services/MessageService/index");
+jest.mock("../../services/ExchangeService/ExchangeService");
+jest.mock("../../services/MessageService/MessageService");
 
 async function expectTakeProfitsStatusToBe(status) {
   const takeProfits = await db.data.findTakeProfits();
