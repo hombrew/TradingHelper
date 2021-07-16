@@ -30,7 +30,7 @@ async function upsertOrder(direction, order) {
   let response;
   try {
     if (orderId) {
-      await this.binance.futuresCancel(symbol, { orderId });
+      await this.cancelOrder(symbol, { orderId });
     }
 
     const options = { type };

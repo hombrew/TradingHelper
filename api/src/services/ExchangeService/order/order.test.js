@@ -11,8 +11,8 @@ const { upsertOrder } = require(".");
 const { flushPromises } = require("../../../../test.helpers");
 
 const bw = {
+  cancelOrder: jest.fn(),
   binance: {
-    futuresCancel: jest.fn(),
     futuresBuy: jest.fn(),
     futuresMarginType: jest.fn(),
     futuresLeverage: jest.fn(),
@@ -39,7 +39,7 @@ describe("upsertOrder", () => {
       orderId: 12346,
     });
     await flushPromises();
-    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(1);
+    expect(bw.cancelOrder).toHaveBeenCalledTimes(1);
     expect(bw.binance.futuresBuy).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
@@ -52,7 +52,7 @@ describe("upsertOrder", () => {
   it("should configure leverage if it's an entry", async () => {
     upsertOrder.call(bw, TRADE_DIRECTION_SHORT, mockOrder);
     await flushPromises();
-    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(0);
+    expect(bw.cancelOrder).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresMarginType).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
@@ -76,7 +76,7 @@ describe("upsertOrder", () => {
     const order = { ...mockOrder, type: ORDER_TYPE_STOP_MARKET };
     upsertOrder.call(bw, TRADE_DIRECTION_LONG, order);
     await flushPromises();
-    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(0);
+    expect(bw.cancelOrder).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresLeverage).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresBuy).toHaveBeenNthCalledWith(
@@ -92,7 +92,7 @@ describe("upsertOrder", () => {
     const order = { ...mockOrder, type: ORDER_TYPE_TAKE_PROFIT_MARKET };
     upsertOrder.call(bw, TRADE_DIRECTION_SHORT, order);
     await flushPromises();
-    expect(bw.binance.futuresCancel).toHaveBeenCalledTimes(0);
+    expect(bw.cancelOrder).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresLeverage).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresSell).toHaveBeenNthCalledWith(

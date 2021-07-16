@@ -36,16 +36,16 @@ async function onEntryFillHandler(event) {
     return;
   }
 
-  const trade = await mongoose
+  let trade = await mongoose
     .model("Trade")
-    .findById(entry.trade._id)
-    .populate("entries")
+    .findOneAndUpdate(
+      { _id: entry.trade._id },
+      { status: TRADE_STATUS_IN_PROGRESS },
+      { new: true }
+    )
     .populate("takeProfits")
     .populate("stopLoss")
     .exec();
-
-  trade.status = TRADE_STATUS_IN_PROGRESS;
-  await trade.save();
 
   const entryPosition = fixedParseFloat(entryObj.originalQuantity);
 
@@ -71,6 +71,15 @@ async function onEntryFillHandler(event) {
   );
 
   await Promise.all(takeProfitsPromises);
+
+  trade = await mongoose
+    .model("Trade")
+    .findById(entry.trade._id)
+    .populate("entries")
+    .populate("takeProfits")
+    .populate("stopLoss")
+    .exec();
+
   return trade.toObject();
 }
 
