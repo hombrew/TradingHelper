@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
-const { ExchangeService } = require("../../services");
 const { fixedParseFloat } = require("../../utils");
+const {
+  getBreakEven,
+  cancelOrdersByStatus,
+  upsertOrder,
+  cancelOrder,
+} = require("../../common");
 const {
   TRADE_STATUS_COMPLETED,
   ORDER_STATUS_NEW,
-  ORDER_STATUS_CANCELLED,
 } = require("../../config/binance.contracts");
 
-const {
-  TRADE_DIRECTION_LONG,
-  TRADE_DIRECTION_SHORT,
-} = require("../../config/constants");
+const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 
 async function onLastTakeProfitFillHandler(tradeId) {
   await mongoose
@@ -27,22 +28,8 @@ async function onLastTakeProfitFillHandler(tradeId) {
     .exec();
 
   for (const order of nonFilledOrders) {
-    const { orderId, symbol } = order;
-    if (orderId) {
-      await ExchangeService.cancelOrder(symbol, { orderId });
-    }
-
-    order.status = ORDER_STATUS_CANCELLED;
-    await order.save();
+    await cancelOrder(order);
   }
-}
-
-function getBreakEven(trade) {
-  const entries = [...trade.entries];
-  entries.sort((entryA, entryB) => entryA.price - entryB.price);
-  const beIndex =
-    trade.direction === TRADE_DIRECTION_LONG ? entries.length - 1 : 0;
-  return entries[beIndex];
 }
 
 async function onOtherTakeProfitFillHandler(trade, takeProfit) {
@@ -63,33 +50,11 @@ async function onOtherTakeProfitFillHandler(trade, takeProfit) {
     const nextPriceIndex = tpIndex < slIndex ? tpIndex + 2 : tpIndex - 2;
     stopLoss.price = orderList[nextPriceIndex].price;
 
-    const nonFilledEntries = trade.entries
-      .filter((entry) => entry.status === ORDER_STATUS_NEW)
-      .map(async (entry) => {
-        const { symbol, orderId } = entry;
-        if (orderId) {
-          await ExchangeService.cancelOrder(symbol, { orderId });
-        }
-
-        entry.status = ORDER_STATUS_CANCELLED;
-        await entry.save();
-      });
-
-    await Promise.all(nonFilledEntries);
+    await cancelOrdersByStatus(trade.entries, ORDER_STATUS_NEW);
   }
 
-  const stopLossDirection =
-    trade.direction === TRADE_DIRECTION_LONG
-      ? TRADE_DIRECTION_SHORT
-      : TRADE_DIRECTION_LONG;
-
   stopLoss.position = fixedParseFloat(stopLoss.position - takeProfit.position);
-  const { orderId } = await ExchangeService.upsertOrder(
-    stopLossDirection,
-    stopLoss.toObject()
-  );
-  stopLoss.orderId = orderId;
-  await stopLoss.save();
+  await upsertOrder(trade, stopLoss);
 }
 
 function getFullTradeById(tradeId) {

@@ -1,9 +1,10 @@
 const { promiseFind } = require("../utils");
 const { decodeCommand } = require("./decoder");
-const calculate = require("./calculate");
-const create = require("./create");
 const get = require("./get");
 const getAll = require("./getAll");
+const calculate = require("./calculate");
+const create = require("./create");
+const breakeven = require("./breakeven");
 
 function tryCommandHandler([currentCommand, encodedData]) {
   return async function ({ command, decoder, handler, encoder }) {
@@ -17,7 +18,7 @@ function tryCommandHandler([currentCommand, encodedData]) {
 
 async function executeCommand(message) {
   const decodedCommand = decodeCommand(message);
-  const handlers = [calculate, create, get, getAll].map(
+  const handlers = [get, getAll, calculate, create, breakeven].map(
     tryCommandHandler(decodedCommand)
   );
   const response = await promiseFind(handlers, Boolean);

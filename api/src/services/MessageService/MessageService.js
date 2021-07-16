@@ -26,6 +26,10 @@ class MessageService {
 
     return this.bot.sendMessage(chatId, message, { parse_mode: "Markdown" });
   }
+
+  sendError(command, message) {
+    return this.sendMessage(`*[${command} error]*: ${message}`);
+  }
 }
 
 module.exports.MessageService = new MessageService(

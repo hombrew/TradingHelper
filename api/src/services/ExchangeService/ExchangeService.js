@@ -54,6 +54,11 @@ class ExchangeService {
     return getMinimum.call(this, symbol);
   }
 
+  async getPrice(symbol) {
+    const response = await this.binance.futuresMarkPrice(symbol);
+    return response.markPrice;
+  }
+
   cancelOrder(...args) {
     return this.binance.futuresCancel(...args);
   }

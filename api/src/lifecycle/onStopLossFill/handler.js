@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
-const { ExchangeService } = require("../../services");
+const { cancelOrdersByStatus } = require("../../common");
 const {
   TRADE_STATUS_COMPLETED,
   ORDER_STATUS_NEW,
-  ORDER_STATUS_CANCELLED,
 } = require("../../config/binance.contracts");
 
 async function onStopLossFillHandler(event) {
@@ -34,25 +33,15 @@ async function onStopLossFillHandler(event) {
       { _id: stopLoss.trade._id },
       { status: TRADE_STATUS_COMPLETED }
     )
+    .populate("entries")
+    .populate("takeProfits")
+    .populate("stopLoss")
     .exec();
 
-  const nonFilledOrders = await mongoose
-    .model("Order")
-    .find({
-      trade: trade._id,
-      status: ORDER_STATUS_NEW,
-    })
-    .exec();
-
-  for (const order of nonFilledOrders) {
-    const { orderId, symbol } = order;
-    if (orderId) {
-      await ExchangeService.cancelOrder(symbol, { orderId });
-    }
-
-    order.status = ORDER_STATUS_CANCELLED;
-    await order.save();
-  }
+  await cancelOrdersByStatus(
+    [...trade.entries, ...trade.takeProfits, trade.stopLoss],
+    ORDER_STATUS_NEW
+  );
 
   trade = await mongoose
     .model("Trade")

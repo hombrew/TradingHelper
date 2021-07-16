@@ -3,21 +3,13 @@ const {
   TRADE_STATUS_IN_PROGRESS,
   ORDER_STATUS_NEW,
 } = require("../../config/binance.contracts");
-const {
-  TRADE_DIRECTION_LONG,
-  TRADE_DIRECTION_SHORT,
-} = require("../../config/constants");
 const { ExchangeService } = require("../../services");
 const { truncate, fixedParseFloat } = require("../../utils");
+const { upsertOrder } = require("../../common");
 
-async function processOrder(order, direction, positionIncrement) {
+async function processOrder(trade, order, positionIncrement) {
   order.position = fixedParseFloat(order.position + positionIncrement);
-  const orderResponse = await ExchangeService.upsertOrder(
-    direction,
-    order.toObject()
-  );
-  order.orderId = String(orderResponse.orderId);
-  await order.save();
+  await upsertOrder(trade, order);
 }
 
 async function onEntryFillHandler(event) {
@@ -55,14 +47,9 @@ async function onEntryFillHandler(event) {
   trade.status = TRADE_STATUS_IN_PROGRESS;
   await trade.save();
 
-  const nextOrderDirection =
-    trade.direction === TRADE_DIRECTION_LONG
-      ? TRADE_DIRECTION_SHORT
-      : TRADE_DIRECTION_LONG;
-
   const entryPosition = fixedParseFloat(entryObj.originalQuantity);
 
-  await processOrder(trade.stopLoss, nextOrderDirection, entryPosition);
+  await processOrder(trade, trade.stopLoss, entryPosition);
 
   const theoricPositionPerTP = truncate(
     entryPosition / trade.takeProfits.length,
@@ -79,7 +66,7 @@ async function onEntryFillHandler(event) {
         );
       }
 
-      await processOrder(takeProfit, nextOrderDirection, position);
+      await processOrder(trade, takeProfit, position);
     }
   );
 
