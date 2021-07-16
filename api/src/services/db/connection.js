@@ -12,6 +12,7 @@ function connectDB() {
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
     }
   );
 }

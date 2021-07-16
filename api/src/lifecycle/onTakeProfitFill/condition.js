@@ -5,7 +5,7 @@ const {
 const { isObject } = require("../../utils");
 
 function onTakeProfitFillCondition(event) {
-  if (!(event.order && isObject(event.order))) {
+  if (!(isObject(event) && isObject(event.order))) {
     return false;
   }
 

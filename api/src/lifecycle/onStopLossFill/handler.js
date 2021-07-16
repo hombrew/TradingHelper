@@ -24,6 +24,10 @@ async function onStopLossFillHandler(event) {
     )
     .exec();
 
+  if (!stopLoss) {
+    return;
+  }
+
   let trade = await mongoose
     .model("Trade")
     .findOneAndUpdate(

@@ -27,17 +27,22 @@ async function onEntryFillHandler(event) {
 
   const entry = await mongoose
     .model("Order")
-    .findOne({
-      symbol: entryObj.symbol,
-      type: entryObj.orderType,
-      price: entryObj.originalPrice,
-      position: entryObj.originalQuantity,
-      status: ORDER_STATUS_NEW,
-    })
+    .findOneAndUpdate(
+      {
+        symbol: entryObj.symbol,
+        type: entryObj.orderType,
+        price: entryObj.originalPrice,
+        position: entryObj.originalQuantity,
+        status: ORDER_STATUS_NEW,
+      },
+      { status: entryObj.orderStatus },
+      { new: true }
+    )
     .exec();
 
-  entry.status = entryObj.orderStatus;
-  await entry.save();
+  if (!entry) {
+    return;
+  }
 
   const trade = await mongoose
     .model("Trade")

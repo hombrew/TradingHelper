@@ -33,6 +33,8 @@ async function onLastTakeProfitFillHandler(tradeId) {
   }
 }
 
+// async function onOtherTakeProfitFillHandler(tradeId) {}
+
 async function onTakeProfitFillHandler(event) {
   const takeProfitObj = event.order;
 
@@ -50,6 +52,10 @@ async function onTakeProfitFillHandler(event) {
       { new: true }
     )
     .exec();
+
+  if (!takeProfit) {
+    return;
+  }
 
   let trade = await mongoose
     .model("Trade")

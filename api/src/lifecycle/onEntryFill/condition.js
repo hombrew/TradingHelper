@@ -5,9 +5,10 @@ const {
 const { isObject } = require("../../utils");
 
 function onEntryFillCondition(event) {
-  if (!(event.order && isObject(event.order))) {
+  if (!(isObject(event) && isObject(event.order))) {
     return false;
   }
+
   return (
     event.order.orderStatus === ORDER_STATUS_FILLED &&
     event.order.orderType === ORDER_TYPE_LIMIT

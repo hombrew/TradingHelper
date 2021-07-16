@@ -9,6 +9,7 @@ async function connection() {
     await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
       poolSize: 10,
     });
   }
