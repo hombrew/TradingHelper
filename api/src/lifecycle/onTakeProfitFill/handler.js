@@ -8,7 +8,10 @@ const {
   ORDER_TYPE_STOP_MARKET,
 } = require("../../config/binance.contracts");
 
-const { TRADE_DIRECTION_LONG } = require("../../config/constants");
+const {
+  TRADE_DIRECTION_LONG,
+  TRADE_DIRECTION_SHORT,
+} = require("../../config/constants");
 
 async function onLastTakeProfitFillHandler(tradeId) {
   await mongoose
@@ -35,14 +38,17 @@ async function onLastTakeProfitFillHandler(tradeId) {
   }
 }
 
-async function onOtherTakeProfitFillHandler(takeProfit) {
+async function onOtherTakeProfitFillHandler(stopLossDirection, takeProfit) {
   const stopLoss = await mongoose
     .model("Order")
     .findOne({ trade: takeProfit.trade._id, type: ORDER_TYPE_STOP_MARKET })
     .exec();
 
   stopLoss.position = fixedParseFloat(stopLoss.position - takeProfit.position);
-  const { orderId } = await ExchangeService.upsertOrder(stopLoss.toObject());
+  const { orderId } = await ExchangeService.upsertOrder(
+    stopLossDirection,
+    stopLoss.toObject()
+  );
   stopLoss.orderId = orderId;
   await stopLoss.save();
 }
@@ -75,14 +81,21 @@ async function onTakeProfitFillHandler(event) {
     .populate("takeProfits")
     .exec();
 
+  let stopLossDirection = TRADE_DIRECTION_SHORT;
+  let minmax = "max";
+
+  if (trade.direction === TRADE_DIRECTION_SHORT) {
+    stopLossDirection = TRADE_DIRECTION_LONG;
+    minmax = "min";
+  }
+
   const takeProfitPrices = trade.takeProfits.map((tp) => tp.price);
-  const minmax = trade.direction === TRADE_DIRECTION_LONG ? "max" : "min";
   const isLastTrade = Math[minmax](...takeProfitPrices) === takeProfit.price;
 
   if (isLastTrade) {
     await onLastTakeProfitFillHandler(trade._id);
   } else {
-    await onOtherTakeProfitFillHandler(takeProfit);
+    await onOtherTakeProfitFillHandler(stopLossDirection, takeProfit);
   }
 
   trade = await mongoose
