@@ -22,6 +22,11 @@ async function expectStopLossStatusToBe(status) {
   expect(stopLoss.status).toBe(status);
 }
 
+async function expectStopLossPositionToBe(status) {
+  const stopLoss = await db.data.findStopLoss();
+  expect(stopLoss.position).toBe(status);
+}
+
 async function expectTradeStatusToBe(status) {
   const trade = await db.data.findTrade();
   expect(trade.status).toBe(status);
@@ -77,6 +82,20 @@ describe("onTakeProfitFillHandler", () => {
   afterAll(async () => await connection.closeDatabase());
 
   describe("LONG", () => {
+    it("should reduce stopLoss position size on takeProfit fill", async () => {
+      await commandCreateLongTrade();
+      await onEntryFillByEntryOrder({ price: 31000 });
+      await onEntryFillByEntryOrder({ price: 30500 });
+
+      await expectStopLossPositionToBe(0.034);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 33000 });
+      await expectStopLossPositionToBe(0.024);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 34000 });
+      await expectStopLossPositionToBe(0.014);
+    });
+
     it("should close current trade and its pending orders", async () => {
       await commandCreateLongTrade();
       await onEntryFillByEntryOrder({ price: 31000 });
@@ -98,6 +117,20 @@ describe("onTakeProfitFillHandler", () => {
   });
 
   describe("SHORT", () => {
+    it.only("should reduce stopLoss position size on takeProfit fill", async () => {
+      await commandCreateShortTrade();
+      await onEntryFillByEntryOrder({ price: 33000 });
+      await onEntryFillByEntryOrder({ price: 34000 });
+
+      await expectStopLossPositionToBe(0.024);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 31000 });
+      await expectStopLossPositionToBe(0.017);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 30500 });
+      await expectStopLossPositionToBe(0.01);
+    });
+
     it("should close current trade and its pending orders", async () => {
       await commandCreateShortTrade();
       await onEntryFillByEntryOrder({ price: 33000 });

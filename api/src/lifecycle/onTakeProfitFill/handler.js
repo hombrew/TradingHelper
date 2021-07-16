@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const { ExchangeService } = require("../../services");
+const { fixedParseFloat } = require("../../utils");
 const {
   TRADE_STATUS_COMPLETED,
   ORDER_STATUS_NEW,
   ORDER_STATUS_CANCELLED,
+  ORDER_TYPE_STOP_MARKET,
 } = require("../../config/binance.contracts");
 
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
@@ -33,7 +35,17 @@ async function onLastTakeProfitFillHandler(tradeId) {
   }
 }
 
-// async function onOtherTakeProfitFillHandler(tradeId) {}
+async function onOtherTakeProfitFillHandler(takeProfit) {
+  const stopLoss = await mongoose
+    .model("Order")
+    .findOne({ trade: takeProfit.trade._id, type: ORDER_TYPE_STOP_MARKET })
+    .exec();
+
+  stopLoss.position = fixedParseFloat(stopLoss.position - takeProfit.position);
+  const { orderId } = await ExchangeService.upsertOrder(stopLoss.toObject());
+  stopLoss.orderId = orderId;
+  await stopLoss.save();
+}
 
 async function onTakeProfitFillHandler(event) {
   const takeProfitObj = event.order;
@@ -69,6 +81,8 @@ async function onTakeProfitFillHandler(event) {
 
   if (isLastTrade) {
     await onLastTakeProfitFillHandler(trade._id);
+  } else {
+    await onOtherTakeProfitFillHandler(takeProfit);
   }
 
   trade = await mongoose
