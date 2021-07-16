@@ -22,9 +22,14 @@ async function expectStopLossStatusToBe(status) {
   expect(stopLoss.status).toBe(status);
 }
 
-async function expectStopLossPositionToBe(status) {
+async function expectStopLossPositionToBe(position) {
   const stopLoss = await db.data.findStopLoss();
-  expect(stopLoss.position).toBe(status);
+  expect(stopLoss.position).toBe(position);
+}
+
+async function expectStopLossPriceToBe(price) {
+  const stopLoss = await db.data.findStopLoss();
+  expect(stopLoss.price).toBe(price);
 }
 
 async function expectTradeStatusToBe(status) {
@@ -82,33 +87,37 @@ describe("onTakeProfitFillHandler", () => {
   afterAll(async () => await connection.closeDatabase());
 
   describe("LONG", () => {
-    it("should reduce stopLoss position size on takeProfit fill", async () => {
+    it("should reduce stopLoss position size and move its price on takeProfit fill", async () => {
       await commandCreateLongTrade();
       await onEntryFillByEntryOrder({ price: 31000 });
       await onEntryFillByEntryOrder({ price: 30500 });
 
       await expectStopLossPositionToBe(0.034);
+      await expectStopLossPriceToBe(29000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 33000 });
       await expectStopLossPositionToBe(0.024);
+      await expectStopLossPriceToBe(29000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 34000 });
       await expectStopLossPositionToBe(0.014);
+      await expectStopLossPriceToBe(31000);
     });
 
     it("should close current trade and its pending orders", async () => {
       await commandCreateLongTrade();
       await onEntryFillByEntryOrder({ price: 31000 });
       await onEntryFillByEntryOrder({ price: 30500 });
-      await onEntryFillByEntryOrder({ price: 30000 });
 
       await onTakeProfitFillByTakeProfitOrder({ price: 33000 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
       await expectStopLossStatusToBe(ORDER_STATUS_NEW);
+      await expectEntryStatusToBe({ price: 30000 }, ORDER_STATUS_NEW);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 34000 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
       await expectStopLossStatusToBe(ORDER_STATUS_NEW);
+      await expectEntryStatusToBe({ price: 30000 }, ORDER_STATUS_CANCELLED); // cancelled by stopLoss movement
 
       await onTakeProfitFillByTakeProfitOrder({ price: 35000 });
       await expectTradeStatusToBe(TRADE_STATUS_COMPLETED);
@@ -117,18 +126,45 @@ describe("onTakeProfitFillHandler", () => {
   });
 
   describe("SHORT", () => {
-    it.only("should reduce stopLoss position size on takeProfit fill", async () => {
+    it("should reduce stopLoss position size and move its price on takeProfit fill", async () => {
       await commandCreateShortTrade();
       await onEntryFillByEntryOrder({ price: 33000 });
       await onEntryFillByEntryOrder({ price: 34000 });
 
       await expectStopLossPositionToBe(0.024);
+      await expectStopLossPriceToBe(36000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 31000 });
       await expectStopLossPositionToBe(0.017);
+      await expectStopLossPriceToBe(36000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 30500 });
       await expectStopLossPositionToBe(0.01);
+      await expectStopLossPriceToBe(33000);
+    });
+
+    it("should move stopLoss price continously", async () => {
+      await commandCreateShortTrade({
+        takeProfits: [31000, 30750, 30500, 30250, 30000],
+      });
+      await onEntryFillByEntryOrder({ price: 33000 });
+      await onEntryFillByEntryOrder({ price: 34000 });
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 31000 });
+      await expectStopLossPriceToBe(36000);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 30750 });
+      await expectStopLossPriceToBe(33000);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 30500 });
+      await expectStopLossPriceToBe(31000);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 30250 });
+      await expectStopLossPriceToBe(30750);
+
+      await onTakeProfitFillByTakeProfitOrder({ price: 30000 });
+      await expectStopLossPriceToBe(30750);
+      await expectStopLossStatusToBe(ORDER_STATUS_CANCELLED);
     });
 
     it("should close current trade and its pending orders", async () => {
@@ -144,12 +180,11 @@ describe("onTakeProfitFillHandler", () => {
       await onTakeProfitFillByTakeProfitOrder({ price: 30500 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
       await expectStopLossStatusToBe(ORDER_STATUS_NEW);
-      await expectEntryStatusToBe({ price: 35000 }, ORDER_STATUS_NEW);
+      await expectEntryStatusToBe({ price: 35000 }, ORDER_STATUS_CANCELLED); // cancelled by stopLoss movement
 
       await onTakeProfitFillByTakeProfitOrder({ price: 30000 });
       await expectTradeStatusToBe(TRADE_STATUS_COMPLETED);
       await expectStopLossStatusToBe(ORDER_STATUS_CANCELLED);
-      await expectEntryStatusToBe({ price: 35000 }, ORDER_STATUS_CANCELLED);
     });
   });
 });

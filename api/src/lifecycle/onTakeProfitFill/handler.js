@@ -5,7 +5,6 @@ const {
   TRADE_STATUS_COMPLETED,
   ORDER_STATUS_NEW,
   ORDER_STATUS_CANCELLED,
-  ORDER_TYPE_STOP_MARKET,
 } = require("../../config/binance.contracts");
 
 const {
@@ -38,11 +37,48 @@ async function onLastTakeProfitFillHandler(tradeId) {
   }
 }
 
-async function onOtherTakeProfitFillHandler(stopLossDirection, takeProfit) {
-  const stopLoss = await mongoose
-    .model("Order")
-    .findOne({ trade: takeProfit.trade._id, type: ORDER_TYPE_STOP_MARKET })
-    .exec();
+function getBreakEven(trade) {
+  const entries = [...trade.entries];
+  entries.sort((entryA, entryB) => entryA.price - entryB.price);
+  const beIndex =
+    trade.direction === TRADE_DIRECTION_LONG ? entries.length - 1 : 0;
+  return entries[beIndex];
+}
+
+async function onOtherTakeProfitFillHandler(trade, takeProfit) {
+  const stopLoss = trade.stopLoss;
+  const breakEven = getBreakEven(trade);
+
+  const orderList = [...trade.takeProfits, breakEven, stopLoss];
+  orderList.sort((orderA, orderB) => orderA.price - orderB.price);
+
+  const tpIndex = orderList.findIndex(
+    (order) => order.price === takeProfit.price
+  );
+  const slIndex = orderList.findIndex(
+    (order) => order.price === stopLoss.price
+  );
+
+  if (Math.abs(tpIndex - slIndex) > 2) {
+    const nextPriceIndex = tpIndex < slIndex ? tpIndex + 2 : tpIndex - 2;
+    stopLoss.price = orderList[nextPriceIndex].price;
+
+    const nonFilledEntries = trade.entries
+      .filter((entry) => entry.status === ORDER_STATUS_NEW)
+      .map(async (entry) => {
+        const { symbol, orderId } = entry;
+        await ExchangeService.cancelOrder(symbol, { orderId });
+        entry.status = ORDER_STATUS_CANCELLED;
+        await entry.save();
+      });
+
+    await Promise.all(nonFilledEntries);
+  }
+
+  const stopLossDirection =
+    trade.direction === TRADE_DIRECTION_LONG
+      ? TRADE_DIRECTION_SHORT
+      : TRADE_DIRECTION_LONG;
 
   stopLoss.position = fixedParseFloat(stopLoss.position - takeProfit.position);
   const { orderId } = await ExchangeService.upsertOrder(
@@ -51,6 +87,22 @@ async function onOtherTakeProfitFillHandler(stopLossDirection, takeProfit) {
   );
   stopLoss.orderId = orderId;
   await stopLoss.save();
+}
+
+function getFullTradeById(tradeId) {
+  return mongoose
+    .model("Trade")
+    .findById(tradeId)
+    .populate("entries")
+    .populate("takeProfits")
+    .populate("stopLoss")
+    .exec();
+}
+
+function isLastTakeProfit(trade, takeProfit) {
+  const takeProfitPrices = trade.takeProfits.map((tp) => tp.price);
+  const minmax = trade.direction === TRADE_DIRECTION_LONG ? "max" : "min";
+  return Math[minmax](...takeProfitPrices) === takeProfit.price;
 }
 
 async function onTakeProfitFillHandler(event) {
@@ -75,36 +127,15 @@ async function onTakeProfitFillHandler(event) {
     return;
   }
 
-  let trade = await mongoose
-    .model("Trade")
-    .findById(takeProfit.trade._id)
-    .populate("takeProfits")
-    .exec();
+  let trade = await getFullTradeById(takeProfit.trade._id);
 
-  let stopLossDirection = TRADE_DIRECTION_SHORT;
-  let minmax = "max";
-
-  if (trade.direction === TRADE_DIRECTION_SHORT) {
-    stopLossDirection = TRADE_DIRECTION_LONG;
-    minmax = "min";
-  }
-
-  const takeProfitPrices = trade.takeProfits.map((tp) => tp.price);
-  const isLastTrade = Math[minmax](...takeProfitPrices) === takeProfit.price;
-
-  if (isLastTrade) {
+  if (isLastTakeProfit(trade, takeProfit)) {
     await onLastTakeProfitFillHandler(trade._id);
   } else {
-    await onOtherTakeProfitFillHandler(stopLossDirection, takeProfit);
+    await onOtherTakeProfitFillHandler(trade, takeProfit);
   }
 
-  trade = await mongoose
-    .model("Trade")
-    .findById(trade._id)
-    .populate("entries")
-    .populate("takeProfits")
-    .populate("stopLoss")
-    .exec();
+  trade = await getFullTradeById(trade._id);
 
   return trade.toObject();
 }
