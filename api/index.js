@@ -7,6 +7,7 @@ const cors = require("cors");
 const { onInit, onExit } = require("./src/lifecycle");
 const { MessageService } = require("./src/services");
 const { executeCommand } = require("./src/commands");
+const { decodeCommand } = require("./src/commands/decoder");
 
 const app = express();
 app.use(cors());
@@ -21,12 +22,15 @@ app.post("/telegram_webhook", async (req, res) => {
   const message = req.body.message || req.body.edited_message;
 
   let data;
+  let command;
 
   try {
     MessageService.checkChatId(message.chat.id);
-    data = await executeCommand(message.text);
+    const decodedCommand = decodeCommand(message.text);
+    command = decodedCommand[0];
+    data = await executeCommand(decodedCommand);
   } catch (e) {
-    await MessageService.sendMessage(message.chat.id, e.message);
+    await MessageService.sendError(message.chat.id, command, e.message);
     return res.send({ error: e.message });
   }
 

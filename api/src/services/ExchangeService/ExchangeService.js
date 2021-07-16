@@ -7,6 +7,7 @@ const {
 const { upsertOrder } = require("./order");
 const { fixTradeConfig, getEntryOrderConfiguration } = require("./calculator");
 const { getMinimum } = require("./minimum");
+const { closePosition } = require("./position");
 
 const noop = () => {};
 
@@ -65,6 +66,10 @@ class ExchangeService {
 
   upsertOrder(direction, order) {
     return upsertOrder.call(this, direction, order);
+  }
+
+  closePosition(...args) {
+    return closePosition.call(this, ...args);
   }
 }
 

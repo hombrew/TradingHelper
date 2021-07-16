@@ -1,10 +1,11 @@
-const mongoose = require("mongoose");
 const { fixedParseFloat } = require("../../utils");
 const {
   getBreakEven,
   cancelOrdersByStatus,
   upsertOrder,
-  cancelOrder,
+  findOrderAndUpdate,
+  findTradeById,
+  findTradeAndUpdate,
 } = require("../../common");
 const {
   TRADE_STATUS_COMPLETED,
@@ -14,22 +15,15 @@ const {
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 
 async function onLastTakeProfitFillHandler(tradeId) {
-  await mongoose
-    .model("Trade")
-    .findOneAndUpdate({ _id: tradeId }, { status: TRADE_STATUS_COMPLETED })
-    .exec();
+  const trade = await findTradeAndUpdate(
+    { _id: tradeId },
+    { status: TRADE_STATUS_COMPLETED }
+  );
 
-  const nonFilledOrders = await mongoose
-    .model("Order")
-    .find({
-      trade: tradeId,
-      status: ORDER_STATUS_NEW,
-    })
-    .exec();
-
-  for (const order of nonFilledOrders) {
-    await cancelOrder(order);
-  }
+  await cancelOrdersByStatus(
+    [...trade.entries, ...trade.takeProfits, trade.stopLoss],
+    ORDER_STATUS_NEW
+  );
 }
 
 async function onOtherTakeProfitFillHandler(trade, takeProfit) {
@@ -57,16 +51,6 @@ async function onOtherTakeProfitFillHandler(trade, takeProfit) {
   await upsertOrder(trade, stopLoss);
 }
 
-function getFullTradeById(tradeId) {
-  return mongoose
-    .model("Trade")
-    .findById(tradeId)
-    .populate("entries")
-    .populate("takeProfits")
-    .populate("stopLoss")
-    .exec();
-}
-
 function isLastTakeProfit(trade, takeProfit) {
   const takeProfitPrices = trade.takeProfits.map((tp) => tp.price);
   const minmax = trade.direction === TRADE_DIRECTION_LONG ? "max" : "min";
@@ -76,26 +60,22 @@ function isLastTakeProfit(trade, takeProfit) {
 async function onTakeProfitFillHandler(event) {
   const takeProfitObj = event.order;
 
-  const takeProfit = await mongoose
-    .model("Order")
-    .findOneAndUpdate(
-      {
-        symbol: takeProfitObj.symbol,
-        type: takeProfitObj.orderType,
-        price: takeProfitObj.originalPrice,
-        position: takeProfitObj.originalQuantity,
-        status: ORDER_STATUS_NEW,
-      },
-      { status: takeProfitObj.orderStatus },
-      { new: true }
-    )
-    .exec();
+  const takeProfit = await findOrderAndUpdate(
+    {
+      symbol: takeProfitObj.symbol,
+      type: takeProfitObj.orderType,
+      price: takeProfitObj.originalPrice,
+      position: takeProfitObj.originalQuantity,
+      status: ORDER_STATUS_NEW,
+    },
+    { status: takeProfitObj.orderStatus }
+  );
 
   if (!takeProfit) {
     return;
   }
 
-  let trade = await getFullTradeById(takeProfit.trade._id);
+  let trade = await findTradeById(takeProfit.trade._id);
 
   if (isLastTakeProfit(trade, takeProfit)) {
     await onLastTakeProfitFillHandler(trade._id);
@@ -103,7 +83,7 @@ async function onTakeProfitFillHandler(event) {
     await onOtherTakeProfitFillHandler(trade, takeProfit);
   }
 
-  trade = await getFullTradeById(trade._id);
+  trade = await findTradeById(trade._id);
 
   return trade.toObject();
 }

@@ -1,10 +1,10 @@
 const { promiseFind } = require("../utils");
-const { decodeCommand } = require("./decoder");
 const get = require("./get");
 const getAll = require("./getAll");
 const calculate = require("./calculate");
 const create = require("./create");
 const breakeven = require("./breakeven");
+const close = require("./close");
 
 function tryCommandHandler([currentCommand, encodedData]) {
   return async function ({ command, decoder, handler, encoder }) {
@@ -16,15 +16,14 @@ function tryCommandHandler([currentCommand, encodedData]) {
   };
 }
 
-async function executeCommand(message) {
-  const decodedCommand = decodeCommand(message);
-  const handlers = [get, getAll, calculate, create, breakeven].map(
+async function executeCommand(decodedCommand) {
+  const handlers = [get, getAll, calculate, create, breakeven, close].map(
     tryCommandHandler(decodedCommand)
   );
   const response = await promiseFind(handlers, Boolean);
 
   if (!response) {
-    throw new Error(`Command '${decodedCommand[0]}' is not implemented yet`);
+    throw new Error("Command not implemented yet");
   }
 
   return response;

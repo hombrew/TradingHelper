@@ -36,6 +36,10 @@ function encodeCalculateData(trades) {
     trades = [trades];
   }
 
+  if (trades.length === 0 || !trades[0]) {
+    throw new Error("No trades were found");
+  }
+
   return trades.map(translate).join("\n");
 }
 

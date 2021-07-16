@@ -1,11 +1,15 @@
-const mongoose = require("mongoose");
 const {
   TRADE_STATUS_IN_PROGRESS,
   ORDER_STATUS_NEW,
 } = require("../../config/binance.contracts");
 const { ExchangeService } = require("../../services");
 const { truncate, fixedParseFloat } = require("../../utils");
-const { upsertOrder } = require("../../common");
+const {
+  upsertOrder,
+  findOrderAndUpdate,
+  findTradeAndUpdate,
+  findTradeById,
+} = require("../../common");
 
 async function processOrder(trade, order, positionIncrement) {
   order.position = fixedParseFloat(order.position + positionIncrement);
@@ -17,35 +21,25 @@ async function onEntryFillHandler(event) {
 
   const { stepSize } = await ExchangeService.getMinimum(entryObj.symbol);
 
-  const entry = await mongoose
-    .model("Order")
-    .findOneAndUpdate(
-      {
-        symbol: entryObj.symbol,
-        type: entryObj.orderType,
-        price: entryObj.originalPrice,
-        position: entryObj.originalQuantity,
-        status: ORDER_STATUS_NEW,
-      },
-      { status: entryObj.orderStatus },
-      { new: true }
-    )
-    .exec();
+  const entry = await findOrderAndUpdate(
+    {
+      symbol: entryObj.symbol,
+      type: entryObj.orderType,
+      price: entryObj.originalPrice,
+      position: entryObj.originalQuantity,
+      status: ORDER_STATUS_NEW,
+    },
+    { status: entryObj.orderStatus }
+  );
 
   if (!entry) {
     return;
   }
 
-  let trade = await mongoose
-    .model("Trade")
-    .findOneAndUpdate(
-      { _id: entry.trade._id },
-      { status: TRADE_STATUS_IN_PROGRESS },
-      { new: true }
-    )
-    .populate("takeProfits")
-    .populate("stopLoss")
-    .exec();
+  let trade = await findTradeAndUpdate(
+    { _id: entry.trade._id },
+    { status: TRADE_STATUS_IN_PROGRESS }
+  );
 
   const entryPosition = fixedParseFloat(entryObj.originalQuantity);
 
@@ -72,13 +66,7 @@ async function onEntryFillHandler(event) {
 
   await Promise.all(takeProfitsPromises);
 
-  trade = await mongoose
-    .model("Trade")
-    .findById(entry.trade._id)
-    .populate("entries")
-    .populate("takeProfits")
-    .populate("stopLoss")
-    .exec();
+  trade = await findTradeById(entry.trade._id);
 
   return trade.toObject();
 }

@@ -33,6 +33,4 @@ module.exports.DB_DB = process.env.DB_DB;
  * Configuration
  */
 
-// browser
-module.exports.BASE_DELAY = process.env.BASE_DELAY;
-module.exports.SCREENSHOT_ENABLED = process.env.SCREENSHOT_ENABLED;
+module.exports.ENVIRONMENT = process.env.NODE_ENV || "development";

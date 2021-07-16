@@ -2,6 +2,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const {
   TELEGRAM_BOT_TOKEN,
   TELEGRAM_CHAT_ID,
+  ENVIRONMENT,
 } = require("../../config/constants");
 
 class MessageService {
@@ -27,8 +28,17 @@ class MessageService {
     return this.bot.sendMessage(chatId, message, { parse_mode: "Markdown" });
   }
 
-  sendError(command, message) {
-    return this.sendMessage(`*[${command} error]*: ${message}`);
+  sendError(...args) {
+    let chatId = this.chatId;
+    let [command, message] = args;
+
+    if (args.length === 3) {
+      [chatId, command, message] = args;
+    }
+    return this.sendMessage(
+      chatId,
+      `*[${command} error @ ${ENVIRONMENT}]*: ${message}`
+    );
   }
 }
 

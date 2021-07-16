@@ -22,10 +22,6 @@ async function getAllTrades() {
 
   const allTrades = [...createdTrades, ...inProgressTrades];
 
-  if (allTrades.length === 0) {
-    throw new Error("No trades were fond");
-  }
-
   return allTrades;
 }
 
