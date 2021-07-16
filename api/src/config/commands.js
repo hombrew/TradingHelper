@@ -1,29 +1,18 @@
-const COMMAND_GET = "/get";
-const COMMAND_GET_ALL = "/getAll";
-const COMMAND_CALCULATE = "/calculate";
-const COMMAND_CREATE = "/create";
-const COMMAND_UPDATE = "/update";
-const COMMAND_DELETE = "/delete";
-const COMMAND_CLOSE = "/close";
-const COMMAND_CLOSE_ALL = "/closeAll";
-
-const COMMANDS = [
-  COMMAND_GET,
-  COMMAND_GET_ALL,
-  COMMAND_CALCULATE,
-  COMMAND_CREATE,
-  COMMAND_UPDATE,
-  COMMAND_DELETE,
-  COMMAND_CLOSE,
-  COMMAND_CLOSE_ALL,
+module.exports.COMMAND_GET = "/get";
+module.exports.COMMAND_GET_ALL = "/getAll";
+module.exports.COMMAND_CALCULATE = "/calculate";
+module.exports.COMMAND_CREATE = "/create";
+module.exports.COMMAND_UPDATE = "/update";
+module.exports.COMMAND_DELETE = "/delete";
+module.exports.COMMAND_CLOSE = "/close";
+module.exports.COMMAND_CLOSE_ALL = "/closeAll";
+module.exports.COMMANDS = [
+  module.exports.COMMAND_GET,
+  module.exports.COMMAND_GET_ALL,
+  module.exports.COMMAND_CALCULATE,
+  module.exports.COMMAND_CREATE,
+  module.exports.COMMAND_UPDATE,
+  module.exports.COMMAND_DELETE,
+  module.exports.COMMAND_CLOSE,
+  module.exports.COMMAND_CLOSE_ALL,
 ];
-
-module.exports.COMMANDS = COMMANDS;
-module.exports.COMMAND_GET = COMMAND_GET;
-module.exports.COMMAND_GET_ALL = COMMAND_GET_ALL;
-module.exports.COMMAND_CALCULATE = COMMAND_CALCULATE;
-module.exports.COMMAND_CREATE = COMMAND_CREATE;
-module.exports.COMMAND_UPDATE = COMMAND_UPDATE;
-module.exports.COMMAND_DELETE = COMMAND_DELETE;
-module.exports.COMMAND_CLOSE = COMMAND_CLOSE;
-module.exports.COMMAND_CLOSE_ALL = COMMAND_CLOSE_ALL;

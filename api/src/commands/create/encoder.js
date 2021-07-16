@@ -1,1 +1,1 @@
-module.exports = require("../calculate").encoder;
+module.exports = require("../get").encoder;

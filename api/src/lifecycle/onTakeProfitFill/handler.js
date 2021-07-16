@@ -67,7 +67,10 @@ async function onOtherTakeProfitFillHandler(trade, takeProfit) {
       .filter((entry) => entry.status === ORDER_STATUS_NEW)
       .map(async (entry) => {
         const { symbol, orderId } = entry;
-        await ExchangeService.cancelOrder(symbol, { orderId });
+        if (orderId) {
+          await ExchangeService.cancelOrder(symbol, { orderId });
+        }
+
         entry.status = ORDER_STATUS_CANCELLED;
         await entry.save();
       });
