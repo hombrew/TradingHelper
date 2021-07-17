@@ -35,10 +35,14 @@ class MessageService {
     if (args.length === 3) {
       [chatId, command, message] = args;
     }
-    return this.sendMessage(
-      chatId,
-      `*[${command.toLowerCase()} error @ ${ENVIRONMENT}]*:\n\n${message}`
-    );
+
+    if (!command) {
+      command = "";
+    }
+
+    const prompt = `${command.toLowerCase()} error @ ${ENVIRONMENT}`.trim();
+
+    return this.sendMessage(chatId, `*[${prompt}]*:\n\n${message}`.trim());
   }
 }
 

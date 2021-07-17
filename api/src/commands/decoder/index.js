@@ -4,7 +4,7 @@ function checkCommand(command) {
   const isValid = COMMANDS.includes(command);
 
   if (!isValid) {
-    throw new Error(`Command '${command}' is not valid.`);
+    throw new Error(`Command '${command}' does not exist.`);
   }
 }
 
