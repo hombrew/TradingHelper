@@ -10,8 +10,11 @@ function tryCommandHandler([currentCommand, encodedData]) {
   return async function ({ command, decoder, handler, encoder }) {
     if (currentCommand !== command) return;
     const decodedData = await decoder(encodedData);
+    // console.log({ decodedData });
     const handledData = await handler(decodedData);
+    // console.log({ handledData });
     const encoded = encoder(handledData);
+    // console.log({ encoded });
     return encoded;
   };
 }

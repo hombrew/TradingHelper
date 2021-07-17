@@ -11,8 +11,8 @@ function countDecimals(number) {
 }
 
 function truncate(number, base) {
-  const decimals = countDecimals(base);
-  const truncated = toFixed(number, decimals);
+  const decimals = countDecimals(fixedParseFloat(base));
+  const truncated = toFixed(fixedParseFloat(number), decimals);
   return fixedParseFloat(truncated);
 }
 

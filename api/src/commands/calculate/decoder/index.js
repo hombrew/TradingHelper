@@ -2,6 +2,7 @@ const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
 } = require("../../../config/constants");
+const { contracts } = require("../../../config/binance.contracts");
 const {
   fixedParseFloat,
   isAscending,
@@ -72,13 +73,17 @@ function checkValues(data) {
   let stopLossPosition = "below";
   let takeProfitsValue = "greater";
 
+  if (!Object.keys(contracts).includes(data.symbol)) {
+    throw new Error(`'SYMBOL: ${data.symbol}' is not supported.`);
+  }
+
   if (
     !(
       data.direction === TRADE_DIRECTION_LONG ||
       data.direction === TRADE_DIRECTION_SHORT
     )
   ) {
-    throw new Error("'DIR' can only take 'LONG' and 'SHORT' values");
+    throw new Error("'DIR' can only take 'LONG' and 'SHORT' values.");
   }
 
   if (data.direction === TRADE_DIRECTION_LONG) {
@@ -101,19 +106,19 @@ function checkValues(data) {
 
   if (!hasValidEP)
     throw new Error(
-      `'EP' is not valid because this is a ${data.direction}, it should be ordered ${entryOrder}`
+      `'EP' is not valid because this is a ${data.direction}, it should be ordered ${entryOrder}.`
     );
   if (!hasValidSL)
     throw new Error(
-      `'SL' is not valid as it should be ${stopLossPosition} the last 'EP'`
+      `'SL' is not valid as it should be ${stopLossPosition} the last 'EP'.`
     );
   if (!hasValidTPOrder)
     throw new Error(
-      `'TP' is not valid because this is a ${data.direction}, it should be ordered ${takeProfitsOrder}`
+      `'TP' is not valid because this is a ${data.direction}, it should be ordered ${takeProfitsOrder}.`
     );
   if (!hasValidTPValue)
     throw new Error(
-      `'TP' is not valid because this is a ${data.direction}, it should be ${takeProfitsValue} than 'EP'`
+      `'TP' is not valid because this is a ${data.direction}, it should be ${takeProfitsValue} than 'EP'.`
     );
 }
 
@@ -124,14 +129,14 @@ function getRealKey(key) {
 
 function decodeCalculateData(message) {
   if (!Array.isArray(message)) {
-    throw new Error("Message is not valid");
+    throw new Error("Message is not valid.");
   }
 
   const rest = message.map((sentence) => sentence.split(":"));
 
   if (!rest.every((item) => Array.isArray(item) && item.length === 2)) {
     throw new Error(
-      "Data is not valid; it should be a dictionary '<KEY>: <VALUE>'"
+      "Data is not valid; it should be a dictionary '<KEY>: <VALUE>'."
     );
   }
 

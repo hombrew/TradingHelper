@@ -37,7 +37,7 @@ class MessageService {
     }
     return this.sendMessage(
       chatId,
-      `*[${command.toLowerCase()} error @ ${ENVIRONMENT}]*:\n${message}`
+      `*[${command.toLowerCase()} error @ ${ENVIRONMENT}]*:\n\n${message}`
     );
   }
 }
