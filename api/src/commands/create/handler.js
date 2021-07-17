@@ -1,4 +1,6 @@
-const { MessageService, ExchangeService } = require("../../services");
+const { ExchangeService } = require("../../services");
+const { getBreakEven } = require("../../common");
+const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 const { Trade, Order } = require("../../services/db");
 const calculateTradeEntries = require("../calculate").handler;
 
@@ -15,7 +17,6 @@ async function addExchangeOrders(direction, orders) {
     }
   }
 
-  await MessageService.sendMessage("Orders created successfully");
   return ordersResponses;
 }
 
@@ -40,11 +41,22 @@ async function saveTrade(tradeData) {
   return tradeObj.toObject();
 }
 
-async function createTrade(unprocessedTrade) {
-  const { symbol } = unprocessedTrade;
-  await MessageService.sendMessage(`Starting to create ${symbol} trade`);
+async function checkPrice(trade) {
+  const price = await ExchangeService.getPrice(trade.symbol);
+  const breakEven = getBreakEven(trade);
+  const hasValidPrice =
+    trade.direction === TRADE_DIRECTION_LONG
+      ? breakEven.price < price
+      : breakEven.price > price;
 
+  if (!hasValidPrice) {
+    throw new Error("Current price is already beteween your entries.");
+  }
+}
+
+async function createTrade(unprocessedTrade) {
   const fixedTrade = await calculateTradeEntries(unprocessedTrade);
+  await checkPrice(fixedTrade);
 
   const ordersResponses = await addExchangeOrders(
     fixedTrade.direction,

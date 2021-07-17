@@ -5,6 +5,7 @@ const {
   ORDER_STATUS_NEW,
 } = require("../../config/binance.contracts");
 const { handler: onEntryFillHandler } = require(".");
+const { ExchangeService } = require("../../services");
 
 jest.mock("../../services/ExchangeService/ExchangeService");
 jest.mock("../../services/MessageService/MessageService");
@@ -21,6 +22,7 @@ async function onEntryFillByEntryOrder(input = {}) {
 }
 
 function commandCreateLongTrade(input = {}) {
+  ExchangeService.getPrice.mockImplementationOnce(() => 34000);
   return createTrade({
     symbol: "BTCUSDT",
     direction: "LONG",
@@ -34,6 +36,7 @@ function commandCreateLongTrade(input = {}) {
 }
 
 function commandCreateShortTrade(input = {}) {
+  ExchangeService.getPrice.mockImplementationOnce(() => 30000);
   return createTrade({
     symbol: "BTCUSDT",
     direction: "SHORT",

@@ -6,26 +6,26 @@ const onEntryFill = require("./onEntryFill");
 const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
 
-function tryEventHandler(event) {
+function getWhereHappened(event) {
   const { eventType, order } = event;
   const { orderStatus, orderType, symbol } = order;
-  const where = `${eventType} ${orderStatus} ${orderType} ${symbol}`;
+  return `${eventType} ${orderStatus} ${orderType} ${symbol}`;
+}
 
+function tryEventHandler(event) {
   return async function ({ condition, handler, responder }) {
-    if (!condition(event)) {
-      await MessageService.sendMessage(where);
-      return;
-    }
+    if (!condition(event)) return;
     try {
       const repsonse = await handler(event);
       return responder(repsonse);
     } catch (e) {
-      await MessageService.sendError(where, e.message);
+      await MessageService.sendError(getWhereHappened(event), e.message);
     }
   };
 }
 
-QueueService.on((event) => {
+QueueService.on(async (event) => {
+  await MessageService.sendMessage(getWhereHappened(event));
   const handlers = [onEntryFill, onStopLossFill, onTakeProfitFill].map(
     tryEventHandler(event)
   );

@@ -8,6 +8,7 @@ const {
 const { handler: createTrade } = require("../../commands/create");
 const { handler: onEntryFillHandler } = require("../onEntryFill");
 const { handler: onStopLossFillHandler } = require(".");
+const { ExchangeService } = require("../../services");
 
 jest.mock("../../services/ExchangeService/ExchangeService");
 jest.mock("../../services/MessageService/MessageService");
@@ -36,6 +37,7 @@ async function onEntryFillByEntryOrder(input = {}) {
 }
 
 function commandCreateLongTrade(input = {}) {
+  ExchangeService.getPrice.mockImplementationOnce(() => 34000);
   return createTrade({
     symbol: "BTCUSDT",
     direction: "LONG",
