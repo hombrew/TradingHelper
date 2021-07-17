@@ -7,15 +7,19 @@ const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
 
 function tryEventHandler(event) {
+  const { eventType, order } = event;
+  const { orderStatus, orderType, symbol } = order;
+  const where = `${eventType} ${orderStatus} ${orderType} ${symbol}`;
+
   return async function ({ condition, handler, responder }) {
-    if (!condition(event)) return;
+    if (!condition(event)) {
+      await MessageService.sendMessage(where);
+      return;
+    }
     try {
       const repsonse = await handler(event);
       return responder(repsonse);
     } catch (e) {
-      const { eventType, order } = event;
-      const { orderStatus, orderType, symbol } = order;
-      const where = `${eventType} ${orderStatus} ${orderType} ${symbol}`;
       await MessageService.sendError(where, e.message);
     }
   };
