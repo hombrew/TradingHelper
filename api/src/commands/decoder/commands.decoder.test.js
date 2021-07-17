@@ -24,7 +24,7 @@ describe("commands.decoder", () => {
   it("should not decode commands not in 'COMMANDS'", () => {
     const command = "/play";
     expect(() => decodeCommand(`${command}\nBALL`)).toThrow(
-      `Command '${command}' is not valid.`
+      `Command '${command}' does not exist.`
     );
   });
 });
