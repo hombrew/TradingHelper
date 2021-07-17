@@ -7,6 +7,7 @@ const {
   findTradeById,
   findTradeAndUpdate,
 } = require("../../common");
+const { uniqBy } = require("../../utils");
 const {
   TRADE_STATUS_COMPLETED,
   ORDER_STATUS_NEW,
@@ -30,20 +31,21 @@ async function onOtherTakeProfitFillHandler(trade, takeProfit) {
   const stopLoss = trade.stopLoss;
   const breakEven = getBreakEven(trade);
 
-  const orderList = [...trade.takeProfits, breakEven, stopLoss];
+  const orderList = uniqBy(
+    [...trade.takeProfits, breakEven, stopLoss],
+    (order) => order.price
+  );
+
   orderList.sort((orderA, orderB) => orderA.price - orderB.price);
 
   const tpIndex = orderList.findIndex(
-    (order) => order.price === takeProfit.price
+    ({ price }) => price === takeProfit.price
   );
-  const slIndex = orderList.findIndex(
-    (order) => order.price === stopLoss.price
-  );
+  const slIndex = orderList.findIndex(({ price }) => price === stopLoss.price);
 
   if (Math.abs(tpIndex - slIndex) > 2) {
     const nextPriceIndex = tpIndex < slIndex ? tpIndex + 2 : tpIndex - 2;
     stopLoss.price = orderList[nextPriceIndex].price;
-
     await cancelOrdersByStatus(trade.entries, ORDER_STATUS_NEW);
   }
 

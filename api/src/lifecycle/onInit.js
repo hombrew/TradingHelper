@@ -1,3 +1,4 @@
+const { MessageService } = require("../services");
 const { connectDB } = require("../services/db");
 const { promiseFind } = require("../utils");
 const { QueueService, ExchangeService } = require("../services");
@@ -6,13 +7,16 @@ const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
 
 function tryEventHandler(event) {
-  return async function ({ condition, handler, responder, errorHandler }) {
+  return async function ({ condition, handler, responder }) {
     if (!condition(event)) return;
     try {
       const repsonse = await handler(event);
       return responder(repsonse);
     } catch (e) {
-      if (errorHandler) errorHandler(e);
+      const { eventType, order } = event;
+      const { orderStatus, orderType, symbol } = order;
+      const where = `${eventType} ${orderStatus} ${orderType} ${symbol}`;
+      await MessageService.sendError(where, e.message);
     }
   };
 }
