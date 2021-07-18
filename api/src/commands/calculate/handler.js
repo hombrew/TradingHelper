@@ -1,5 +1,7 @@
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 const { ExchangeService } = require("../../services");
+const { getBreakEven, getLastBreakEven } = require("../../common");
+const { orderDescBy, orderAscBy, truncate } = require("../../utils");
 const { formatUnprocessedTrade } = require("../formatters");
 
 function generateDCAEntryOrders(entries, parts, direction) {
@@ -27,7 +29,29 @@ function generateDCAEntryOrders(entries, parts, direction) {
   return [entries[0], ...entryOrders];
 }
 
-function calculateTradeEntries(unprocessedTrade) {
+function setStopPrices(trade) {
+  // stopLoss
+  const lastBreakEven = getLastBreakEven(trade);
+  trade.stopLoss.stopPrice = lastBreakEven.price;
+
+  // takeProfits
+  const breakEven = getBreakEven(trade);
+  let takeProfits =
+    trade.direction === TRADE_DIRECTION_LONG
+      ? orderAscBy(trade.takeProfits, (order) => order.price)
+      : orderDescBy(trade.takeProfits, (order) => order.price);
+  trade.takeProfits = takeProfits.map((tp, tpIndex, self) => {
+    tp.stopPrice =
+      tpIndex === 0
+        ? truncate((breakEven.price + tp.price) / 2, tp.price)
+        : self[tpIndex - 1].price;
+    return tp;
+  });
+
+  return trade;
+}
+
+async function calculateTradeEntries(unprocessedTrade) {
   const trade = formatUnprocessedTrade(unprocessedTrade);
   const { entries, risked, parts, stopLoss, direction } = trade;
 
@@ -48,7 +72,8 @@ function calculateTradeEntries(unprocessedTrade) {
     entries: entryOrders,
   };
 
-  return ExchangeService.fixTrade(configuredTrade);
+  const fixedTrade = await ExchangeService.fixTrade(configuredTrade);
+  return setStopPrices(fixedTrade);
 }
 
 module.exports = calculateTradeEntries;

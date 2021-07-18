@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const {
   contracts,
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_TAKE_PROFIT_MARKET,
-  ORDER_TYPE_STOP_MARKET,
+  ORDER_TYPE_TAKE_PROFIT,
+  ORDER_TYPE_STOP,
   TRADE_STATUS,
 } = require("../../../config/binance.contracts");
 
@@ -48,15 +48,15 @@ const tradeSchema = new mongoose.Schema({
 
 const option = {
   [ORDER_TYPE_LIMIT]: "entries",
-  [ORDER_TYPE_TAKE_PROFIT_MARKET]: "takeProfits",
-  [ORDER_TYPE_STOP_MARKET]: "stopLoss",
+  [ORDER_TYPE_TAKE_PROFIT]: "takeProfits",
+  [ORDER_TYPE_STOP]: "stopLoss",
 };
 
 tradeSchema.methods.addOrder = async function (order) {
   const type = order.type;
 
   const currentEntries =
-    type === ORDER_TYPE_STOP_MARKET
+    type === ORDER_TYPE_STOP
       ? order._id
       : [...(this[option[type]] || []), order._id];
 

@@ -1,6 +1,6 @@
 const {
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_STOP_MARKET,
+  ORDER_TYPE_STOP,
   ORDER_STATUS_NEW,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
@@ -17,12 +17,12 @@ describe("onStopLossFillCondition", () => {
     [{ order: 1234 }],
     [{ order: "order" }],
     [{ order: {} }],
-    [{ order: { orderType: ORDER_TYPE_STOP_MARKET } }],
+    [{ order: { orderType: ORDER_TYPE_STOP } }],
     [{ order: { orderStatus: ORDER_STATUS_FILLED } }],
     [
       {
         order: {
-          orderType: ORDER_TYPE_STOP_MARKET,
+          orderType: ORDER_TYPE_STOP,
           orderStatus: ORDER_STATUS_NEW,
         },
       },
@@ -42,7 +42,7 @@ describe("onStopLossFillCondition", () => {
   it("should pass validation when given the needed condition", () => {
     const input = {
       order: {
-        orderType: ORDER_TYPE_STOP_MARKET,
+        orderType: ORDER_TYPE_STOP,
         orderStatus: ORDER_STATUS_FILLED,
       },
     };

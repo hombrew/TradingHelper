@@ -1,5 +1,5 @@
 const {
-  ORDER_TYPE_TAKE_PROFIT_MARKET,
+  ORDER_TYPE_TAKE_PROFIT,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
 const { isObject } = require("../../utils");
@@ -11,7 +11,7 @@ function onTakeProfitFillCondition(event) {
 
   return (
     event.order.orderStatus === ORDER_STATUS_FILLED &&
-    event.order.orderType === ORDER_TYPE_TAKE_PROFIT_MARKET
+    event.order.orderType === ORDER_TYPE_TAKE_PROFIT
   );
 }
 

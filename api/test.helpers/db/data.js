@@ -1,7 +1,7 @@
 const {
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_STOP_MARKET,
-  ORDER_TYPE_TAKE_PROFIT_MARKET,
+  ORDER_TYPE_STOP,
+  ORDER_TYPE_TAKE_PROFIT,
   ORDER_STATUS_NEW,
   TRADE_STATUS_CREATED,
 } = require("../../src/config/binance.contracts");
@@ -28,7 +28,7 @@ async function createStopLossOrder(input = {}) {
     risked: 1000,
     status: ORDER_STATUS_NEW,
     ...input,
-    type: ORDER_TYPE_STOP_MARKET,
+    type: ORDER_TYPE_STOP,
     reduceOnly: true,
   });
 }
@@ -41,21 +41,21 @@ async function createTakeProfitOrder(input = {}) {
     risked: 1000,
     status: ORDER_STATUS_NEW,
     ...input,
-    type: ORDER_TYPE_TAKE_PROFIT_MARKET,
+    type: ORDER_TYPE_TAKE_PROFIT,
     reduceOnly: true,
   });
 }
 
 function findStopLoss(input = {}) {
   return Order.findOne({
-    type: ORDER_TYPE_STOP_MARKET,
+    type: ORDER_TYPE_STOP,
     ...input,
   });
 }
 
 function findTakeProfits(input = {}) {
   return Order.find({
-    type: ORDER_TYPE_TAKE_PROFIT_MARKET,
+    type: ORDER_TYPE_TAKE_PROFIT,
     ...input,
   });
 }

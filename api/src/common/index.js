@@ -6,6 +6,7 @@ const findTradeAndUpdate = require("./findTradeAndUpdate");
 const findTradeById = require("./findTradeById");
 const getBreakEven = require("./getBreakEven");
 const getOrderDirectionByTrade = require("./getOrderDirectionByTrade");
+const getTakeProfit = require("./getTakeProfit");
 const upsertOrder = require("./upsertOrder");
 
 module.exports = {
@@ -16,6 +17,7 @@ module.exports = {
   ...findTradeAndUpdate,
   ...findTradeById,
   ...getBreakEven,
+  ...getTakeProfit,
   ...getOrderDirectionByTrade,
   ...upsertOrder,
 };

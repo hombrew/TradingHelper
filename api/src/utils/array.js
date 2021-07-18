@@ -12,6 +12,16 @@ function uniqBy(array, cb = (item) => item) {
   });
 }
 
+function orderAscBy(array, cb = (item) => item) {
+  return [...array].sort((itemA, itemB) => cb(itemA) - cb(itemB));
+}
+
+function orderDescBy(array, cb) {
+  return orderAscBy(array, cb).reverse();
+}
+
 module.exports.isAscending = isAscending;
 module.exports.isDescending = isDescending;
+module.exports.orderAscBy = orderAscBy;
+module.exports.orderDescBy = orderDescBy;
 module.exports.uniqBy = uniqBy;
