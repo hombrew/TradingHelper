@@ -45,7 +45,7 @@ describe("upsertOrder", () => {
       mockOrder.symbol,
       mockOrder.position,
       mockOrder.price,
-      { type: mockOrder.type }
+      { type: mockOrder.type, timeInForce: "GTC" }
     );
   });
 
@@ -68,7 +68,7 @@ describe("upsertOrder", () => {
       mockOrder.symbol,
       mockOrder.position,
       mockOrder.price,
-      { type: mockOrder.type }
+      { type: mockOrder.type, timeInForce: "GTC" }
     );
   });
 
@@ -84,7 +84,12 @@ describe("upsertOrder", () => {
       order.symbol,
       order.position,
       order.price,
-      { type: order.type, reduceOnly: true, stopPrice: order.stopPrice }
+      {
+        type: order.type,
+        reduceOnly: true,
+        stopPrice: order.stopPrice,
+        timeInForce: "GTC",
+      }
     );
   });
 
@@ -104,7 +109,12 @@ describe("upsertOrder", () => {
       order.symbol,
       order.position,
       order.price,
-      { type: order.type, reduceOnly: true, stopPrice: order.stopPrice }
+      {
+        type: order.type,
+        reduceOnly: true,
+        stopPrice: order.stopPrice,
+        timeInForce: "GTC",
+      }
     );
   });
 });

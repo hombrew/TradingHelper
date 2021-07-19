@@ -7,6 +7,7 @@ const {
 const { handler: onEntryFillHandler } = require(".");
 const { ExchangeService } = require("../../services");
 
+jest.mock("../../services/LogService/LogService");
 jest.mock("../../services/ExchangeService/ExchangeService");
 jest.mock("../../services/MessageService/MessageService");
 

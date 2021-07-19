@@ -33,7 +33,7 @@ async function upsertOrder(direction, order) {
       await this.cancelOrder(symbol, { orderId });
     }
 
-    const options = { type };
+    const options = { type, timeInForce: "GTC" };
 
     if (type === ORDER_TYPE_LIMIT) {
       await this.binance.futuresMarginType(symbol, "ISOLATED");
