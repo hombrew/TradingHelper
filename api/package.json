@@ -11,12 +11,14 @@
   "author": "Manuel Maldonado",
   "license": "ISC",
   "dependencies": {
+    "apex-logs-winston": "1.1.0",
     "body-parser": "1.19.0",
     "cors": "2.8.5",
     "express": "4.17.1",
     "mongoose": "5.13.2",
     "node-binance-api": "0.12.5",
-    "node-telegram-bot-api": "0.53.0"
+    "node-telegram-bot-api": "0.53.0",
+    "winston": "3.3.3"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",

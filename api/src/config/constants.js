@@ -29,6 +29,10 @@ module.exports.DB_PASSWORD = process.env.DB_PASSWORD;
 module.exports.DB_HOST = process.env.DB_HOST;
 module.exports.DB_DB = process.env.DB_DB;
 
+// logger
+module.exports.APEX_LOGS_URL = process.env.APEX_LOGS_URL;
+module.exports.APEX_LOGS_AUTH_TOKEN = process.env.APEX_LOGS_AUTH_TOKEN;
+module.exports.APEX_LOGS_PROJECT_ID = process.env.APEX_LOGS_PROJECT_ID;
 /**
  * Configuration
  */

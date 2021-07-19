@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.dev
       context: ./server
     ports:
-      - "${RTB_APP_PORT}:80"
+      - ${RTB_APP_PORT}:80
 
   api:
     container_name: api
@@ -24,6 +24,9 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
       - DB_DB=${DB_DB}
+      - APEX_LOGS_URL=${APEX_LOGS_URL}
+      - APEX_LOGS_AUTH_TOKEN=${APEX_LOGS_AUTH_TOKEN}
+      - APEX_LOGS_PROJECT_ID=${APEX_LOGS_PROJECT_ID}
     build:
       dockerfile: ./docker/Dockerfile.dev
       context: ./api

@@ -2,7 +2,7 @@ const {
   ORDER_STATUS_CREATED,
   ORDER_STATUS_NEW,
 } = require("../config/binance.contracts");
-const { ExchangeService } = require("../services");
+const { ExchangeService, LogService } = require("../services");
 const { Order } = require("../services/db");
 const { isObject } = require("../utils");
 const { getOrderDirectionByTrade } = require("./getOrderDirectionByTrade");
@@ -29,6 +29,7 @@ async function upsertOrder(directionOrTrade, order) {
   );
 
   if (!response.orderId) {
+    LogService.error("Order upsert", response);
     throw new Error(
       `Imposibble to add order ${order.symbol} of price ${order.price}`
     );
