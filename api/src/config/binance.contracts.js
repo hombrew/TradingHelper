@@ -226,13 +226,15 @@ module.exports.ORDER_TYPES = [
 ];
 
 module.exports.ORDER_STATUS_NEW = "NEW";
+module.exports.ORDER_STATUS_CREATED = "CREATED";
 module.exports.ORDER_STATUS_PARTIALLY_FILLED = "PARTIALLY_FILLED";
 module.exports.ORDER_STATUS_FILLED = "FILLED";
-module.exports.ORDER_STATUS_CANCELLED = "CANCELLED";
+module.exports.ORDER_STATUS_CANCELLED = "CANCELED";
 module.exports.ORDER_STATUS_REJECTED = "REJECTED";
 module.exports.ORDER_STATUS_EXPIRED = "EXPIRED";
 module.exports.ORDER_STATUS = [
   module.exports.ORDER_STATUS_NEW,
+  module.exports.ORDER_STATUS_CREATED,
   module.exports.ORDER_STATUS_PARTIALLY_FILLED,
   module.exports.ORDER_STATUS_FILLED,
   module.exports.ORDER_STATUS_CANCELLED,
@@ -240,10 +242,12 @@ module.exports.ORDER_STATUS = [
   module.exports.ORDER_STATUS_EXPIRED,
 ];
 
+module.exports.TRADE_STATUS_NEW = "NEW";
 module.exports.TRADE_STATUS_CREATED = "CREATED";
 module.exports.TRADE_STATUS_IN_PROGRESS = "IN_PROGRESS";
 module.exports.TRADE_STATUS_COMPLETED = "COMPLETED";
 module.exports.TRADE_STATUS = [
+  module.exports.TRADE_STATUS_NEW,
   module.exports.TRADE_STATUS_CREATED,
   module.exports.TRADE_STATUS_IN_PROGRESS,
   module.exports.TRADE_STATUS_COMPLETED,

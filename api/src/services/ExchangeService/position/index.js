@@ -1,11 +1,11 @@
 const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
-} = require("../../config/constants");
+} = require("../../../config/constants");
 
 const method = {
-  [TRADE_DIRECTION_LONG]: "futuresMarketBuy",
-  [TRADE_DIRECTION_SHORT]: "futuresMarketSell",
+  [TRADE_DIRECTION_LONG]: "futuresMarketSell",
+  [TRADE_DIRECTION_SHORT]: "futuresMarketBuy",
 };
 
 async function closePosition(direction, { symbol, position }) {

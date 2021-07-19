@@ -1,7 +1,7 @@
 const {
   ORDER_TYPE_LIMIT,
   ORDER_TYPE_STOP,
-  ORDER_STATUS_NEW,
+  ORDER_STATUS_CREATED,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
 const condition = require("./condition");
@@ -23,7 +23,7 @@ describe("onStopLossFillCondition", () => {
       {
         order: {
           orderType: ORDER_TYPE_STOP,
-          orderStatus: ORDER_STATUS_NEW,
+          orderStatus: ORDER_STATUS_CREATED,
         },
       },
     ],

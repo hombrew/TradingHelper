@@ -1,13 +1,5 @@
-const {
-  cancelOrdersByStatus,
-  findTradeById,
-  findOrderAndUpdate,
-  findTradeAndUpdate,
-} = require("../../common");
-const {
-  TRADE_STATUS_COMPLETED,
-  ORDER_STATUS_NEW,
-} = require("../../config/binance.contracts");
+const { findOrderAndUpdate, closeTrade } = require("../../common");
+const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
 
 async function onStopLossFillHandler(event) {
   const stopLossObj = event.order;
@@ -18,7 +10,7 @@ async function onStopLossFillHandler(event) {
       type: stopLossObj.orderType,
       price: stopLossObj.originalPrice,
       position: stopLossObj.originalQuantity,
-      status: ORDER_STATUS_NEW,
+      status: ORDER_STATUS_CREATED,
     },
     { status: stopLossObj.orderStatus }
   );
@@ -27,17 +19,7 @@ async function onStopLossFillHandler(event) {
     return;
   }
 
-  let trade = await findTradeAndUpdate(
-    { _id: stopLoss.trade._id },
-    { status: TRADE_STATUS_COMPLETED }
-  );
-
-  await cancelOrdersByStatus(
-    [...trade.entries, ...trade.takeProfits, trade.stopLoss],
-    ORDER_STATUS_NEW
-  );
-
-  trade = await findTradeById(trade._id);
+  const trade = await closeTrade(stopLoss.trade._id);
 
   return trade.toObject();
 }

@@ -1,11 +1,11 @@
 const { cancelOrder } = require("./cancelOrder");
 
 async function cancelOrdersByStatus(orders, status) {
-  const nonFilledEntries = orders
-    .filter((order) => order.status === status)
-    .map(cancelOrder);
+  const ordersByStatus = orders.filter((order) => order.status === status);
 
-  await Promise.all(nonFilledEntries);
+  for (const order of ordersByStatus) {
+    await cancelOrder(order);
+  }
 }
 
 module.exports.cancelOrdersByStatus = cancelOrdersByStatus;

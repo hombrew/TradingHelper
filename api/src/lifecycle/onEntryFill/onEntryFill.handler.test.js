@@ -2,7 +2,7 @@ const { db } = require("../../../test.helpers");
 const { handler: createTrade } = require("../../commands/create");
 const {
   ORDER_STATUS_FILLED,
-  ORDER_STATUS_NEW,
+  ORDER_STATUS_CREATED,
 } = require("../../config/binance.contracts");
 const { handler: onEntryFillHandler } = require(".");
 const { ExchangeService } = require("../../services");
@@ -74,8 +74,8 @@ describe("onEntryFillHandler", () => {
       await onEntryFillByEntryOrder({ price: 31000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
-      expect(entries[1].status).toBe(ORDER_STATUS_NEW);
-      expect(entries[2].status).toBe(ORDER_STATUS_NEW);
+      expect(entries[1].status).toBe(ORDER_STATUS_CREATED);
+      expect(entries[2].status).toBe(ORDER_STATUS_CREATED);
 
       takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.004, "string");
@@ -93,7 +93,7 @@ describe("onEntryFillHandler", () => {
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_FILLED);
-      expect(entries[2].status).toBe(ORDER_STATUS_NEW);
+      expect(entries[2].status).toBe(ORDER_STATUS_CREATED);
 
       const takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.01, "string");
@@ -137,8 +137,8 @@ describe("onEntryFillHandler", () => {
       await onEntryFillByEntryOrder({ price: 33000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
-      expect(entries[1].status).toBe(ORDER_STATUS_NEW);
-      expect(entries[2].status).toBe(ORDER_STATUS_NEW);
+      expect(entries[1].status).toBe(ORDER_STATUS_CREATED);
+      expect(entries[2].status).toBe(ORDER_STATUS_CREATED);
 
       takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.003, "string");
@@ -156,7 +156,7 @@ describe("onEntryFillHandler", () => {
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_FILLED);
-      expect(entries[2].status).toBe(ORDER_STATUS_NEW);
+      expect(entries[2].status).toBe(ORDER_STATUS_CREATED);
 
       const takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.007, "string");

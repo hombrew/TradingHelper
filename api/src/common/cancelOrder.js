@@ -1,11 +1,17 @@
-const { ORDER_STATUS_CANCELLED } = require("../config/binance.contracts");
+const {
+  ORDER_STATUS_CANCELLED,
+  ORDER_STATUS_CREATED,
+} = require("../config/binance.contracts");
 const { ExchangeService } = require("../services");
+const { Order } = require("../services/db");
 
 async function cancelOrder(order) {
-  const { orderId, symbol } = order;
+  order = new Order(order);
+  const { orderId, symbol, status } = order;
 
-  if (orderId) {
+  if (orderId && status === ORDER_STATUS_CREATED) {
     await ExchangeService.cancelOrder(symbol, { orderId });
+    await ExchangeService.waitForOrderCancellation(order);
   }
 
   order.status = ORDER_STATUS_CANCELLED;

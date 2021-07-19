@@ -4,6 +4,10 @@ const { getEntryOrderConfiguration, fixTradeConfig } =
 const ExchangeService = {};
 ExchangeService.onOrderUpdate = jest.fn();
 
+ExchangeService.waitForOrderCreation = jest.fn();
+
+ExchangeService.waitForOrderCancellation = jest.fn();
+
 ExchangeService.getPrice = jest.fn().mockImplementation(() => 30000);
 
 ExchangeService.getMinimum = jest.fn().mockImplementation(async () => {

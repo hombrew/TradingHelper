@@ -5,6 +5,8 @@ const { QueueService, ExchangeService } = require("../services");
 const onEntryFill = require("./onEntryFill");
 const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
+const onNew = require("./onNew");
+const onCancelled = require("./onCancelled");
 
 function getWhereHappened(event) {
   const { eventType, order } = event;
@@ -26,9 +28,13 @@ function tryEventHandler(event) {
 
 QueueService.on(async (event) => {
   await MessageService.sendMessage(getWhereHappened(event));
-  const handlers = [onEntryFill, onStopLossFill, onTakeProfitFill].map(
-    tryEventHandler(event)
-  );
+  const handlers = [
+    onEntryFill,
+    onStopLossFill,
+    onTakeProfitFill,
+    onNew,
+    onCancelled,
+  ].map(tryEventHandler(event));
   return promiseFind(handlers, Boolean);
 });
 

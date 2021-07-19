@@ -1,7 +1,7 @@
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 const {
   TRADE_STATUS_IN_PROGRESS,
-  ORDER_STATUS_NEW,
+  ORDER_STATUS_CREATED,
 } = require("../../config/binance.contracts");
 const { ExchangeService } = require("../../services");
 const {
@@ -36,7 +36,7 @@ async function takeTradeToBreakeven(tradeId) {
     );
   }
 
-  await cancelOrdersByStatus(trade.entries, ORDER_STATUS_NEW);
+  await cancelOrdersByStatus(trade.entries, ORDER_STATUS_CREATED);
   const stopLoss = trade.stopLoss;
   stopLoss.price = breakEven.price;
   stopLoss.stopPrice = truncate(

@@ -2,8 +2,8 @@ const { db } = require("../../../test.helpers");
 const {
   TRADE_STATUS_IN_PROGRESS,
   TRADE_STATUS_COMPLETED,
-  ORDER_STATUS_NEW,
   ORDER_STATUS_CANCELLED,
+  ORDER_STATUS_CREATED,
 } = require("../../config/binance.contracts");
 const { handler: createTrade } = require("../../commands/create");
 const { handler: onEntryFillHandler } = require("../onEntryFill");
@@ -68,7 +68,7 @@ describe("onStopLossFillHandler", () => {
     await onEntryFillByEntryOrder({ price: 30000 });
 
     await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
-    await expectTakeProfitsStatusToBe(ORDER_STATUS_NEW);
+    await expectTakeProfitsStatusToBe(ORDER_STATUS_CREATED);
 
     await onSLFillBySLOrder();
 

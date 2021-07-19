@@ -2,8 +2,8 @@ const { db } = require("../../../test.helpers");
 const {
   TRADE_STATUS_IN_PROGRESS,
   TRADE_STATUS_COMPLETED,
-  ORDER_STATUS_NEW,
   ORDER_STATUS_CANCELLED,
+  ORDER_STATUS_CREATED,
 } = require("../../config/binance.contracts");
 const { handler: createTrade } = require("../../commands/create");
 const { handler: onEntryFillHandler } = require("../onEntryFill");
@@ -114,12 +114,12 @@ describe("onTakeProfitFillHandler", () => {
 
       await onTakeProfitFillByTakeProfitOrder({ price: 33000 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
-      await expectStopLossStatusToBe(ORDER_STATUS_NEW);
-      await expectEntryStatusToBe({ price: 30000 }, ORDER_STATUS_NEW);
+      await expectStopLossStatusToBe(ORDER_STATUS_CREATED);
+      await expectEntryStatusToBe({ price: 30000 }, ORDER_STATUS_CREATED);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 34000 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
-      await expectStopLossStatusToBe(ORDER_STATUS_NEW);
+      await expectStopLossStatusToBe(ORDER_STATUS_CREATED);
       await expectEntryStatusToBe({ price: 30000 }, ORDER_STATUS_CANCELLED); // cancelled by stopLoss movement
 
       await onTakeProfitFillByTakeProfitOrder({ price: 35000 });
@@ -177,12 +177,12 @@ describe("onTakeProfitFillHandler", () => {
 
       await onTakeProfitFillByTakeProfitOrder({ price: 31000 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
-      await expectStopLossStatusToBe(ORDER_STATUS_NEW);
-      await expectEntryStatusToBe({ price: 35000 }, ORDER_STATUS_NEW);
+      await expectStopLossStatusToBe(ORDER_STATUS_CREATED);
+      await expectEntryStatusToBe({ price: 35000 }, ORDER_STATUS_CREATED);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 30500 });
       await expectTradeStatusToBe(TRADE_STATUS_IN_PROGRESS);
-      await expectStopLossStatusToBe(ORDER_STATUS_NEW);
+      await expectStopLossStatusToBe(ORDER_STATUS_CREATED);
       await expectEntryStatusToBe({ price: 35000 }, ORDER_STATUS_CANCELLED); // cancelled by stopLoss movement
 
       await onTakeProfitFillByTakeProfitOrder({ price: 30000 });

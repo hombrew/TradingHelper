@@ -1,6 +1,6 @@
 const {
   TRADE_STATUS_IN_PROGRESS,
-  ORDER_STATUS_NEW,
+  ORDER_STATUS_CREATED,
 } = require("../../config/binance.contracts");
 const { ExchangeService } = require("../../services");
 const { truncate, fixedParseFloat } = require("../../utils");
@@ -27,7 +27,7 @@ async function onEntryFillHandler(event) {
       type: entryObj.orderType,
       price: entryObj.originalPrice,
       position: entryObj.originalQuantity,
-      status: ORDER_STATUS_NEW,
+      status: ORDER_STATUS_CREATED,
     },
     { status: entryObj.orderStatus }
   );

@@ -5,27 +5,11 @@ const {
   upsertOrder,
   findOrderAndUpdate,
   findTradeById,
-  findTradeAndUpdate,
+  closeTrade,
 } = require("../../common");
 const { uniqBy } = require("../../utils");
-const {
-  TRADE_STATUS_COMPLETED,
-  ORDER_STATUS_NEW,
-} = require("../../config/binance.contracts");
-
+const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
-
-async function onLastTakeProfitFillHandler(tradeId) {
-  const trade = await findTradeAndUpdate(
-    { _id: tradeId },
-    { status: TRADE_STATUS_COMPLETED }
-  );
-
-  await cancelOrdersByStatus(
-    [...trade.entries, ...trade.takeProfits, trade.stopLoss],
-    ORDER_STATUS_NEW
-  );
-}
 
 async function onOtherTakeProfitFillHandler(trade, takeProfit) {
   const stopLoss = trade.stopLoss;
@@ -48,7 +32,7 @@ async function onOtherTakeProfitFillHandler(trade, takeProfit) {
     const nextStopPriceIndex = tpIndex < slIndex ? tpIndex + 1 : tpIndex - 1;
     stopLoss.price = orderList[nextPriceIndex].price;
     stopLoss.stopPrice = orderList[nextStopPriceIndex].price;
-    await cancelOrdersByStatus(trade.entries, ORDER_STATUS_NEW);
+    await cancelOrdersByStatus(trade.entries, ORDER_STATUS_CREATED);
   }
 
   stopLoss.position = fixedParseFloat(stopLoss.position - takeProfit.position);
@@ -70,7 +54,7 @@ async function onTakeProfitFillHandler(event) {
       type: takeProfitObj.orderType,
       price: takeProfitObj.originalPrice,
       position: takeProfitObj.originalQuantity,
-      status: ORDER_STATUS_NEW,
+      status: ORDER_STATUS_CREATED,
     },
     { status: takeProfitObj.orderStatus }
   );
@@ -82,7 +66,7 @@ async function onTakeProfitFillHandler(event) {
   let trade = await findTradeById(takeProfit.trade._id);
 
   if (isLastTakeProfit(trade, takeProfit)) {
-    await onLastTakeProfitFillHandler(trade._id);
+    await closeTrade(trade._id);
   } else {
     await onOtherTakeProfitFillHandler(trade, takeProfit);
   }

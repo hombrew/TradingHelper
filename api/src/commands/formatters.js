@@ -3,7 +3,7 @@ const {
   ORDER_TYPE_STOP,
   ORDER_TYPE_TAKE_PROFIT,
   ORDER_STATUS_NEW,
-  TRADE_STATUS_CREATED,
+  TRADE_STATUS_NEW,
 } = require("../config/binance.contracts");
 
 function buildOrder(symbol, type, price) {
@@ -40,7 +40,7 @@ function formatUnprocessedTrade(unprocessedTrade) {
 
       return trade;
     },
-    { ...unprocessedTrade, status: TRADE_STATUS_CREATED }
+    { ...unprocessedTrade, status: TRADE_STATUS_NEW }
   );
 }
 
