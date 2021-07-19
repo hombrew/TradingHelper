@@ -1,9 +1,9 @@
 const {
   ORDER_STATUS_CANCELLED,
   ORDER_STATUS_CREATED,
-} = require("../config/binance.contracts");
-const { ExchangeService } = require("../services");
-const { Order } = require("../services/db");
+} = require("../../config/binance.contracts");
+const { ExchangeService } = require("../../services");
+const { Order } = require("../../services/db");
 
 async function cancelOrder(order) {
   order = new Order(order);

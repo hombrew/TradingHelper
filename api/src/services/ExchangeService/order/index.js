@@ -22,18 +22,14 @@ const sell = {
 };
 
 async function upsertOrder(direction, order) {
-  let { symbol, leverage, position, price, orderId, type, stopPrice } = order;
+  let { symbol, leverage, position, price, type, stopPrice } = order;
 
   const [orderDirection] =
     direction === TRADE_DIRECTION_LONG ? [buy, sell] : [sell, buy];
 
   let response;
   try {
-    if (orderId) {
-      await this.cancelOrder(symbol, { orderId });
-    }
-
-    const options = { type, timeInForce: "GTC" };
+    const options = { type };
 
     if (type === ORDER_TYPE_LIMIT) {
       await this.binance.futuresMarginType(symbol, "ISOLATED");

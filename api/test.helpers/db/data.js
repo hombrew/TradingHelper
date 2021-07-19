@@ -5,10 +5,11 @@ const {
   ORDER_STATUS_NEW,
   TRADE_STATUS_CREATED,
 } = require("../../src/config/binance.contracts");
+const { TRADE_DIRECTION_LONG } = require("../../src/config/constants");
 const { Order, Trade } = require("../../src/services/db");
 
-async function createEntryOrder(input = {}) {
-  return new Order({
+function createEntry(input = {}) {
+  return {
     symbol: "BTCUSDT",
     price: 30000,
     position: 1,
@@ -17,11 +18,11 @@ async function createEntryOrder(input = {}) {
     ...input,
     type: ORDER_TYPE_LIMIT,
     reduceOnly: false,
-  });
+  };
 }
 
-async function createStopLossOrder(input = {}) {
-  return new Order({
+function createStopLoss(input = {}) {
+  return {
     symbol: "BTCUSDT",
     price: 30000,
     position: 1,
@@ -30,11 +31,11 @@ async function createStopLossOrder(input = {}) {
     ...input,
     type: ORDER_TYPE_STOP,
     reduceOnly: true,
-  });
+  };
 }
 
-async function createTakeProfitOrder(input = {}) {
-  return new Order({
+function createTakeProfit(input = {}) {
+  return {
     symbol: "BTCUSDT",
     price: 30000,
     position: 1,
@@ -43,7 +44,29 @@ async function createTakeProfitOrder(input = {}) {
     ...input,
     type: ORDER_TYPE_TAKE_PROFIT,
     reduceOnly: true,
-  });
+  };
+}
+
+function createTradeData(input = {}) {
+  return {
+    symbol: "BTCUSDT",
+    direction: TRADE_DIRECTION_LONG,
+    risked: 1000,
+    status: TRADE_STATUS_CREATED,
+    ...input,
+  };
+}
+
+function createEntryOrder(input = {}) {
+  return new Order(createEntry(input));
+}
+
+function createStopLossOrder(input = {}) {
+  return new Order(createStopLoss(input));
+}
+
+function createTakeProfitOrder(input = {}) {
+  return new Order(createTakeProfit(input));
 }
 
 function findStopLoss(input = {}) {
@@ -68,13 +91,7 @@ function findEntries(input = {}) {
 }
 
 function createTrade(input = {}) {
-  return new Trade({
-    symbol: "BTCUSDT",
-    direction: "LONG",
-    risked: 1000,
-    status: TRADE_STATUS_CREATED,
-    ...input,
-  });
+  return new Trade(createTradeData(input));
 }
 
 function findTrade(input = {}) {
@@ -83,6 +100,9 @@ function findTrade(input = {}) {
   });
 }
 
+module.exports.createEntry = createEntry;
+module.exports.createTakeProfit = createTakeProfit;
+module.exports.createStopLoss = createStopLoss;
 module.exports.createEntryOrder = createEntryOrder;
 module.exports.createStopLossOrder = createStopLossOrder;
 module.exports.createTakeProfitOrder = createTakeProfitOrder;
@@ -90,5 +110,6 @@ module.exports.findStopLoss = findStopLoss;
 module.exports.findTakeProfits = findTakeProfits;
 module.exports.findEntries = findEntries;
 
+module.exports.createTradeData = createTradeData;
 module.exports.createTrade = createTrade;
 module.exports.findTrade = findTrade;

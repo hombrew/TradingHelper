@@ -11,7 +11,6 @@ const { upsertOrder } = require(".");
 const { flushPromises } = require("../../../../test.helpers");
 
 const bw = {
-  cancelOrder: jest.fn(),
   binance: {
     futuresBuy: jest.fn(),
     futuresMarginType: jest.fn(),
@@ -33,26 +32,9 @@ describe("upsertOrder", () => {
     type: ORDER_TYPE_LIMIT,
   };
 
-  it("should first cancel an order if it already existed", async () => {
-    upsertOrder.call(bw, TRADE_DIRECTION_LONG, {
-      ...mockOrder,
-      orderId: 12346,
-    });
-    await flushPromises();
-    expect(bw.cancelOrder).toHaveBeenCalledTimes(1);
-    expect(bw.binance.futuresBuy).toHaveBeenNthCalledWith(
-      1,
-      mockOrder.symbol,
-      mockOrder.position,
-      mockOrder.price,
-      { type: mockOrder.type, timeInForce: "GTC" }
-    );
-  });
-
   it("should configure leverage if it's an entry", async () => {
     upsertOrder.call(bw, TRADE_DIRECTION_SHORT, mockOrder);
     await flushPromises();
-    expect(bw.cancelOrder).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresMarginType).toHaveBeenNthCalledWith(
       1,
       mockOrder.symbol,
@@ -68,7 +50,7 @@ describe("upsertOrder", () => {
       mockOrder.symbol,
       mockOrder.position,
       mockOrder.price,
-      { type: mockOrder.type, timeInForce: "GTC" }
+      { type: mockOrder.type }
     );
   });
 
@@ -76,7 +58,6 @@ describe("upsertOrder", () => {
     const order = { ...mockOrder, stopPrice: 31000, type: ORDER_TYPE_STOP };
     upsertOrder.call(bw, TRADE_DIRECTION_LONG, order);
     await flushPromises();
-    expect(bw.cancelOrder).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresLeverage).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresBuy).toHaveBeenNthCalledWith(
@@ -84,12 +65,7 @@ describe("upsertOrder", () => {
       order.symbol,
       order.position,
       order.price,
-      {
-        type: order.type,
-        reduceOnly: true,
-        stopPrice: order.stopPrice,
-        timeInForce: "GTC",
-      }
+      { type: order.type, reduceOnly: true, stopPrice: order.stopPrice }
     );
   });
 
@@ -101,7 +77,6 @@ describe("upsertOrder", () => {
     };
     upsertOrder.call(bw, TRADE_DIRECTION_SHORT, order);
     await flushPromises();
-    expect(bw.cancelOrder).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresLeverage).toHaveBeenCalledTimes(0);
     expect(bw.binance.futuresSell).toHaveBeenNthCalledWith(
@@ -109,12 +84,7 @@ describe("upsertOrder", () => {
       order.symbol,
       order.position,
       order.price,
-      {
-        type: order.type,
-        reduceOnly: true,
-        stopPrice: order.stopPrice,
-        timeInForce: "GTC",
-      }
+      { type: order.type, reduceOnly: true, stopPrice: order.stopPrice }
     );
   });
 });

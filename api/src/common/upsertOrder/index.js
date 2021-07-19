@@ -1,11 +1,12 @@
 const {
   ORDER_STATUS_CREATED,
   ORDER_STATUS_NEW,
-} = require("../config/binance.contracts");
-const { ExchangeService, LogService } = require("../services");
-const { Order } = require("../services/db");
-const { isObject } = require("../utils");
-const { getOrderDirectionByTrade } = require("./getOrderDirectionByTrade");
+} = require("../../config/binance.contracts");
+const { ExchangeService, LogService } = require("../../services");
+const { Order } = require("../../services/db");
+const { isObject } = require("../../utils");
+const { cancelOrder } = require("../cancelOrder");
+const { getOrderDirectionByTrade } = require("../getOrderDirectionByTrade");
 
 async function upsertOrder(directionOrTrade, order) {
   order = new Order(order);
@@ -21,6 +22,10 @@ async function upsertOrder(directionOrTrade, order) {
 
   if (isObject(directionOrTrade)) {
     directionOrTrade = getOrderDirectionByTrade(directionOrTrade, order);
+  }
+
+  if (order.orderId) {
+    await cancelOrder(order);
   }
 
   const response = await ExchangeService.upsertOrder(

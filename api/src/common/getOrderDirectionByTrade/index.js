@@ -1,12 +1,12 @@
 const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
-} = require("../config/constants");
+} = require("../../config/constants");
 const {
   ORDER_TYPE_LIMIT,
   ORDER_TYPE_STOP,
   ORDER_TYPE_TAKE_PROFIT,
-} = require("../config/binance.contracts");
+} = require("../../config/binance.contracts");
 
 const orderDirectionMap = {
   [TRADE_DIRECTION_LONG]: {
@@ -21,7 +21,7 @@ const orderDirectionMap = {
   },
 };
 
-async function getOrderDirectionByTrade(trade, order) {
+function getOrderDirectionByTrade(trade, order) {
   return orderDirectionMap[trade.direction][order.type];
 }
 
