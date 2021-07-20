@@ -32,8 +32,8 @@ QueueService.on(async (event) => {
     onEntryFill,
     onStopLossFill,
     onTakeProfitFill,
-    onNew,
-    onCancelled,
+    // onNew,
+    // onCancelled,
   ].map(tryEventHandler(event));
   return promiseFind(handlers, Boolean);
 });
