@@ -4,7 +4,7 @@ const {
   ORDER_STATUS_FILLED,
   TRADE_STATUS_IN_PROGRESS,
 } = require("../config/binance.contracts");
-const { ExchangeService, LogService } = require("../services");
+const { ExchangeService } = require("../services");
 const { findTradeAndUpdate } = require("./findTradeAndUpdate");
 const { findTradeById } = require("./findTradeById");
 const { addBy, truncate, fixedParseFloat } = require("../utils");
@@ -31,29 +31,19 @@ async function setTradeBoundaries(tradeId) {
     (entry) => entry.status === ORDER_STATUS_FILLED
   );
 
-  LogService.info("/verify FILLED ENTRIES", filledEntries);
-
   const filledEntryPositionSum = addBy(
     filledEntries,
     (entry) => entry.position
   );
 
-  LogService.info("/verify filledEntryPositionSum", filledEntryPositionSum);
-
   await processOrder(trade, trade.stopLoss, filledEntryPositionSum);
 
-  LogService.info("/verify processed stop loss");
-
   const { stepSize } = await ExchangeService.getMinimum(trade.symbol);
-
-  LogService.info("/verify stepSize", stepSize);
 
   const theoricPositionPerTP = truncate(
     filledEntryPositionSum / trade.takeProfits.length,
     stepSize
   );
-
-  LogService.info("/verify theoricPositionPerTP", theoricPositionPerTP);
 
   for (const takeProfit of trade.takeProfits) {
     let position = theoricPositionPerTP;
@@ -69,8 +59,6 @@ async function setTradeBoundaries(tradeId) {
 
     await processOrder(trade, takeProfit, position);
   }
-
-  LogService.info("/verify processed TP");
 
   trade = await findTradeById(tradeId);
   return trade.toObject();
