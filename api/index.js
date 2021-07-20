@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const { onInit, onExit } = require("./src/lifecycle");
-const { MessageService } = require("./src/services");
+const { MessageService, LogService } = require("./src/services");
 const { executeCommand } = require("./src/commands");
 const { decodeCommand } = require("./src/commands/decoder");
 
@@ -30,6 +30,7 @@ app.post("/telegram_webhook", async (req, res) => {
     command = decodedCommand[0];
     data = await executeCommand(decodedCommand);
   } catch (e) {
+    LogService.error(command, e);
     await MessageService.sendError(message.chat.id, command, e.message);
     return res.send({ error: e.message });
   }
