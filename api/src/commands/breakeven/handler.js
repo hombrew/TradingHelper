@@ -39,10 +39,10 @@ async function takeTradeToBreakeven(tradeId) {
   await cancelOrdersByStatus(trade.entries, ORDER_STATUS_CREATED);
   const stopLoss = trade.stopLoss;
   stopLoss.price = breakEven.price;
-  stopLoss.stopPrice = truncate(
-    (breakEven.price + currentSymbolPrice) / 2,
-    breakEven.price
-  );
+  // stopLoss.stopPrice = truncate(
+  //   (breakEven.price + currentSymbolPrice) / 2,
+  //   breakEven.price
+  // );
   await upsertOrder(trade, stopLoss);
 }
 

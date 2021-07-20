@@ -1,5 +1,5 @@
 const {
-  ORDER_TYPE_STOP,
+  ORDER_TYPE_STOP_MARKET,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
 const { isObject } = require("../../utils");
@@ -11,7 +11,7 @@ function onStopLossFillCondition(event) {
 
   return (
     event.order.orderStatus === ORDER_STATUS_FILLED &&
-    event.order.orderType === ORDER_TYPE_STOP
+    event.order.orderType === ORDER_TYPE_STOP_MARKET
   );
 }
 

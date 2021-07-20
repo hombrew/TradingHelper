@@ -1,7 +1,7 @@
 const { MessageService } = require("../services");
 const { connectDB } = require("../services/db");
 const { promiseFind } = require("../utils");
-const { QueueService, ExchangeService } = require("../services");
+const { QueueService, ExchangeService, LogService } = require("../services");
 const onEntryFill = require("./onEntryFill");
 const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
@@ -27,7 +27,7 @@ function tryEventHandler(event) {
 }
 
 QueueService.on(async (event) => {
-  await MessageService.sendMessage(getWhereHappened(event));
+  LogService.info("ORDER UPDATE EVENT", event);
   const handlers = [
     onEntryFill,
     onStopLossFill,

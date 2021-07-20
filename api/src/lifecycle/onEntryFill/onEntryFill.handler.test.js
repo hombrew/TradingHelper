@@ -97,9 +97,9 @@ describe("onEntryFillHandler", () => {
       expect(entries[2].status).toBe(ORDER_STATUS_CREATED);
 
       const takeProfits = await db.data.findTakeProfits();
-      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.01, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.01, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.014, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.011, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.011, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.012, "string");
       const stopLoss = await db.data.findStopLoss();
       expectPositionAndOrderIdTypeToBe(stopLoss, 0.034, "string");
     });
@@ -116,9 +116,9 @@ describe("onEntryFillHandler", () => {
       expect(entries[2].status).toBe(ORDER_STATUS_FILLED);
 
       const takeProfits = await db.data.findTakeProfits();
-      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.019, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.019, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.025, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.021, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.021, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.021, "string");
       const stopLoss = await db.data.findStopLoss();
       expectPositionAndOrderIdTypeToBe(stopLoss, 0.063, "string");
     });
@@ -160,9 +160,9 @@ describe("onEntryFillHandler", () => {
       expect(entries[2].status).toBe(ORDER_STATUS_CREATED);
 
       const takeProfits = await db.data.findTakeProfits();
-      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.007, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.007, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.01, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.008, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.008, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.008, "string");
       const stopLoss = await db.data.findStopLoss();
       expectPositionAndOrderIdTypeToBe(stopLoss, 0.024, "string");
     });
@@ -179,9 +179,9 @@ describe("onEntryFillHandler", () => {
       expect(entries[2].status).toBe(ORDER_STATUS_FILLED);
 
       const takeProfits = await db.data.findTakeProfits();
-      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.016, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.016, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.02, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.017, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.017, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.018, "string");
       const stopLoss = await db.data.findStopLoss();
       expectPositionAndOrderIdTypeToBe(stopLoss, 0.052, "string");
     });

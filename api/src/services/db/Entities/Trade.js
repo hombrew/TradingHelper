@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
 const {
   contracts,
-  ORDER_TYPE_LIMIT,
-  ORDER_TYPE_TAKE_PROFIT,
-  ORDER_TYPE_STOP,
   TRADE_STATUS,
 } = require("../../../config/binance.contracts");
 
@@ -45,34 +42,6 @@ const tradeSchema = new mongoose.Schema({
     ref: "Order",
   },
 });
-
-const option = {
-  [ORDER_TYPE_LIMIT]: "entries",
-  [ORDER_TYPE_TAKE_PROFIT]: "takeProfits",
-  [ORDER_TYPE_STOP]: "stopLoss",
-};
-
-tradeSchema.methods.addOrder = async function (order) {
-  const type = order.type;
-
-  const currentEntries =
-    type === ORDER_TYPE_STOP
-      ? order._id
-      : [...(this[option[type]] || []), order._id];
-
-  this[option[type]] = currentEntries;
-  order.trade = this._id;
-  await order.save();
-};
-
-tradeSchema.methods.addOrders = async function (orders) {
-  await Promise.all(
-    orders.map((order) => {
-      this.addOrder(order);
-    })
-  );
-  return this.save();
-};
 
 const Trade = mongoose.model("Trade", tradeSchema);
 

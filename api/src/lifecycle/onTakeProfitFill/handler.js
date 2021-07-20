@@ -29,9 +29,9 @@ async function onOtherTakeProfitFillHandler(trade, takeProfit) {
 
   if (Math.abs(tpIndex - slIndex) > 2) {
     const nextPriceIndex = tpIndex < slIndex ? tpIndex + 2 : tpIndex - 2;
-    const nextStopPriceIndex = tpIndex < slIndex ? tpIndex + 1 : tpIndex - 1;
+    // const nextStopPriceIndex = tpIndex < slIndex ? tpIndex + 1 : tpIndex - 1;
     stopLoss.price = orderList[nextPriceIndex].price;
-    stopLoss.stopPrice = orderList[nextStopPriceIndex].price;
+    // stopLoss.stopPrice = orderList[nextStopPriceIndex].price;
     await cancelOrdersByStatus(trade.entries, ORDER_STATUS_CREATED);
   }
 

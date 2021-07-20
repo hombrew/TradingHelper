@@ -73,7 +73,8 @@ async function calculateTradeEntries(unprocessedTrade) {
   };
 
   const fixedTrade = await ExchangeService.fixTrade(configuredTrade);
-  return setStopPrices(fixedTrade);
+  // return setStopPrices(fixedTrade);
+  return fixedTrade;
 }
 
 module.exports = calculateTradeEntries;

@@ -1,8 +1,8 @@
 const { TRADE_DIRECTION_LONG } = require("../../../config/constants");
 const {
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_STOP,
-  ORDER_TYPE_TAKE_PROFIT,
+  ORDER_TYPE_STOP_MARKET,
+  ORDER_TYPE_TAKE_PROFIT_MARKET,
 } = require("../../../config/binance.contracts");
 const { sleep } = require("../../../utils");
 
@@ -22,7 +22,7 @@ const sell = {
 };
 
 async function upsertOrder(direction, order) {
-  let { symbol, leverage, position, price, type, stopPrice } = order;
+  let { symbol, leverage, position, price, type } = order;
 
   const [orderDirection] =
     direction === TRADE_DIRECTION_LONG ? [buy, sell] : [sell, buy];
@@ -36,9 +36,13 @@ async function upsertOrder(direction, order) {
       await this.binance.futuresLeverage(symbol, leverage);
     }
 
-    if (type === ORDER_TYPE_STOP || type === ORDER_TYPE_TAKE_PROFIT) {
-      options.stopPrice = stopPrice;
+    if (
+      type === ORDER_TYPE_STOP_MARKET ||
+      type === ORDER_TYPE_TAKE_PROFIT_MARKET
+    ) {
+      options.stopPrice = price;
       options.reduceOnly = true;
+      price = null;
     }
 
     response = await this.binance[orderDirection.method](
@@ -52,10 +56,9 @@ async function upsertOrder(direction, order) {
     throw e;
   }
 
-  await sleep(300);
+  await sleep(150);
 
   return response;
 }
 
-// module.exports.getOpenPositions = getOpenPositions;
 module.exports.upsertOrder = upsertOrder;

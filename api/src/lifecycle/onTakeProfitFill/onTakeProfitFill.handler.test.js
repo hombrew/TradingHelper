@@ -100,11 +100,11 @@ describe("onTakeProfitFillHandler", () => {
       await expectStopLossPriceToBe(29000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 33000 });
-      await expectStopLossPositionToBe(0.024);
+      await expectStopLossPositionToBe(0.023);
       await expectStopLossPriceToBe(29000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 34000 });
-      await expectStopLossPositionToBe(0.014);
+      await expectStopLossPositionToBe(0.012);
       await expectStopLossPriceToBe(31000);
     });
 
@@ -139,11 +139,11 @@ describe("onTakeProfitFillHandler", () => {
       await expectStopLossPriceToBe(36000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 31000 });
-      await expectStopLossPositionToBe(0.017);
+      await expectStopLossPositionToBe(0.016);
       await expectStopLossPriceToBe(36000);
 
       await onTakeProfitFillByTakeProfitOrder({ price: 30500 });
-      await expectStopLossPositionToBe(0.01);
+      await expectStopLossPositionToBe(0.008);
       await expectStopLossPriceToBe(33000);
     });
 

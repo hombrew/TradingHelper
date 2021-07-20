@@ -1,6 +1,6 @@
 const {
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_STOP,
+  ORDER_TYPE_STOP_MARKET,
   ORDER_STATUS_CREATED,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
@@ -30,7 +30,7 @@ describe("onTakeProfitFillCondition", () => {
     [
       {
         order: {
-          orderType: ORDER_TYPE_STOP,
+          orderType: ORDER_TYPE_STOP_MARKET,
           orderStatus: ORDER_STATUS_FILLED,
         },
       },

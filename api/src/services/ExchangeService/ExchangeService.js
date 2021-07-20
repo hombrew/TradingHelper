@@ -12,6 +12,7 @@ const { upsertOrder } = require("./order");
 const { fixTradeConfig, getEntryOrderConfiguration } = require("./calculator");
 const { getMinimum } = require("./minimum");
 const { closePosition } = require("./position");
+const { LogService } = require("../LogService");
 
 const noop = () => {};
 const orderFinder = (status, order) => (currentOrder) => {
@@ -48,11 +49,11 @@ class ExchangeService {
 
   initiateSuscriptions() {
     this.binance.websockets.userFutureData(
-      null, // margin_call_callback
-      null, // account_update_callback
+      (...event) => LogService.info("MARGIN CALL EVENT", ...event), // margin_call_callback
+      (...event) => LogService.info("ACCOUNT UPDATE EVENT", ...event), // account_update_callback
       (...event) => this.onOrderUpdateCallback(...event), // order_update_callback
-      null, // subscribed_callback
-      null // account_config_update_callback
+      (...event) => LogService.info("SUBSCRIBED EVENT", ...event), // subscribed_callback
+      (...event) => LogService.info("ACCOUNT CONFIG UPDATE EVENT", ...event) // account_config_update_callback
     );
   }
 

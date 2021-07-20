@@ -17,7 +17,7 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  stopPrice: Number,
+  // stopPrice: Number,
   position: Number,
   type: {
     type: String,

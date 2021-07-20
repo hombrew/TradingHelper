@@ -1,6 +1,6 @@
 const {
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_TAKE_PROFIT,
+  ORDER_TYPE_TAKE_PROFIT_MARKET,
   ORDER_STATUS_CREATED,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
@@ -17,12 +17,12 @@ describe("onTakeProfitFillCondition", () => {
     [{ order: 1234 }],
     [{ order: "order" }],
     [{ order: {} }],
-    [{ order: { orderType: ORDER_TYPE_TAKE_PROFIT } }],
+    [{ order: { orderType: ORDER_TYPE_TAKE_PROFIT_MARKET } }],
     [{ order: { orderStatus: ORDER_STATUS_FILLED } }],
     [
       {
         order: {
-          orderType: ORDER_TYPE_TAKE_PROFIT,
+          orderType: ORDER_TYPE_TAKE_PROFIT_MARKET,
           orderStatus: ORDER_STATUS_CREATED,
         },
       },
@@ -42,7 +42,7 @@ describe("onTakeProfitFillCondition", () => {
   it("should pass validation when given the needed condition", () => {
     const input = {
       order: {
-        orderType: ORDER_TYPE_TAKE_PROFIT,
+        orderType: ORDER_TYPE_TAKE_PROFIT_MARKET,
         orderStatus: ORDER_STATUS_FILLED,
       },
     };

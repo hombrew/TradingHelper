@@ -1,7 +1,7 @@
 const {
   ORDER_TYPE_LIMIT,
-  ORDER_TYPE_STOP,
-  ORDER_TYPE_TAKE_PROFIT,
+  ORDER_TYPE_STOP_MARKET,
+  ORDER_TYPE_TAKE_PROFIT_MARKET,
 } = require("../../../config/binance.contracts");
 const {
   TRADE_DIRECTION_LONG,
@@ -55,7 +55,7 @@ describe("upsertOrder", () => {
   });
 
   it("should close position if it's a stop loss", async () => {
-    const order = { ...mockOrder, stopPrice: 31000, type: ORDER_TYPE_STOP };
+    const order = { ...mockOrder, type: ORDER_TYPE_STOP_MARKET };
     upsertOrder.call(bw, TRADE_DIRECTION_LONG, order);
     await flushPromises();
     expect(bw.binance.futuresMarginType).toHaveBeenCalledTimes(0);
@@ -64,16 +64,15 @@ describe("upsertOrder", () => {
       1,
       order.symbol,
       order.position,
-      order.price,
-      { type: order.type, reduceOnly: true, stopPrice: order.stopPrice }
+      null,
+      { type: order.type, reduceOnly: true, stopPrice: order.price }
     );
   });
 
   it("should reduce only if it's a take profit", async () => {
     const order = {
       ...mockOrder,
-      stopPrice: 29000,
-      type: ORDER_TYPE_TAKE_PROFIT,
+      type: ORDER_TYPE_TAKE_PROFIT_MARKET,
     };
     upsertOrder.call(bw, TRADE_DIRECTION_SHORT, order);
     await flushPromises();
@@ -83,8 +82,8 @@ describe("upsertOrder", () => {
       1,
       order.symbol,
       order.position,
-      order.price,
-      { type: order.type, reduceOnly: true, stopPrice: order.stopPrice }
+      null,
+      { type: order.type, reduceOnly: true, stopPrice: order.price }
     );
   });
 });

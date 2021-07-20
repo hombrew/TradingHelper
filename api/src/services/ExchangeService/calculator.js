@@ -154,7 +154,10 @@ async function fixTradeConfig(trade) {
   const entries = fixTradeEntries(minimum, trade.entries, takeProfits.length);
   return {
     ...trade,
-    risked: addBy(entries, ({ risked }) => risked),
+    risked: truncate(
+      addBy(entries, ({ risked }) => risked),
+      minimum.tickSize
+    ),
     entries,
     takeProfits,
     stopLoss: fixPrice(minimum, trade.stopLoss),
