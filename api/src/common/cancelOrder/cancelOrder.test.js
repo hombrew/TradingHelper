@@ -39,7 +39,7 @@ describe("cancelOrder", () => {
     await cancelOrder(newOrder);
     await expectSLStatusToBe(ORDER_STATUS_CANCELLED);
     expect(ExchangeService.cancelOrder).not.toHaveBeenCalled();
-    expect(ExchangeService.waitForOrderCancellation).not.toHaveBeenCalled();
+    // expect(ExchangeService.waitForOrderCancellation).not.toHaveBeenCalled();
   });
 
   it("should cancel an order from binance before saving it to the db", async () => {
@@ -57,18 +57,18 @@ describe("cancelOrder", () => {
       { orderId }
     );
 
-    expect(ExchangeService.waitForOrderCancellation).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        _id: newOrder._id,
-        orderId: newOrder.orderId,
-        position: newOrder.position,
-        price: newOrder.price,
-        reduceOnly: newOrder.reduceOnly,
-        risked: newOrder.risked,
-        symbol: newOrder.symbol,
-        type: newOrder.type,
-      })
-    );
+    // expect(ExchangeService.waitForOrderCancellation).toHaveBeenNthCalledWith(
+    //   1,
+    //   expect.objectContaining({
+    //     _id: newOrder._id,
+    //     orderId: newOrder.orderId,
+    //     position: newOrder.position,
+    //     price: newOrder.price,
+    //     reduceOnly: newOrder.reduceOnly,
+    //     risked: newOrder.risked,
+    //     symbol: newOrder.symbol,
+    //     type: newOrder.type,
+    //   })
+    // );
   });
 });
