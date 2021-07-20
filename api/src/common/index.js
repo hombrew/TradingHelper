@@ -10,6 +10,7 @@ const getBreakEven = require("./getBreakEven");
 const getOrderDirectionByTrade = require("./getOrderDirectionByTrade");
 const getTakeProfit = require("./getTakeProfit");
 const upsertOrder = require("./upsertOrder");
+const setTradeBoundaries = require("./setTradeBoundaries");
 
 module.exports = {
   ...cancelOrder,
@@ -24,4 +25,5 @@ module.exports = {
   ...getTakeProfit,
   ...getOrderDirectionByTrade,
   ...upsertOrder,
+  ...setTradeBoundaries,
 };
