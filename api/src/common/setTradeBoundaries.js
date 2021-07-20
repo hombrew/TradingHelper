@@ -38,7 +38,7 @@ async function setTradeBoundaries(tradeId) {
 
   await processOrder(trade, trade.stopLoss, filledEntryPositionSum);
 
-  const { stepSize } = await ExchangeService.getMinimum(trade.symbool);
+  const { stepSize } = await ExchangeService.getMinimum(trade.symbol);
 
   const theoricPositionPerTP = truncate(
     filledEntryPositionSum / trade.takeProfits.length,
