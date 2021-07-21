@@ -252,3 +252,6 @@ module.exports.TRADE_STATUS = [
   module.exports.TRADE_STATUS_IN_PROGRESS,
   module.exports.TRADE_STATUS_COMPLETED,
 ];
+
+module.exports.BINANCE_WS_EVENT_TYPE_ACCOUNT_UPDATE = "ACCOUNT_UPDATE";
+module.exports.BINANCE_WS_EVENT_REASON_TYPE_ORDER = "ORDER";

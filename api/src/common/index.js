@@ -4,8 +4,7 @@ const closeTrade = require("./closeTrade");
 const createTrade = require("./createTrade");
 const deleteOrder = require("./deleteOrder");
 const findOrderAndUpdate = require("./findOrderAndUpdate");
-const findTradeAndUpdate = require("./findTradeAndUpdate");
-const findTradeById = require("./findTradeById");
+const findTrade = require("./findTrade");
 const getBreakEven = require("./getBreakEven");
 const getOrderDirectionByTrade = require("./getOrderDirectionByTrade");
 const getTakeProfit = require("./getTakeProfit");
@@ -19,8 +18,7 @@ module.exports = {
   ...createTrade,
   ...deleteOrder,
   ...findOrderAndUpdate,
-  ...findTradeAndUpdate,
-  ...findTradeById,
+  ...findTrade,
   ...getBreakEven,
   ...getTakeProfit,
   ...getOrderDirectionByTrade,

@@ -5,10 +5,12 @@ const {
   TRADE_STATUS_IN_PROGRESS,
 } = require("../config/binance.contracts");
 const { ExchangeService } = require("../services");
-const { findTradeAndUpdate } = require("./findTradeAndUpdate");
-const { findTradeById } = require("./findTradeById");
+const { findTradeById, findTradeAndUpdate } = require("./findTrade");
 const { addBy, truncate, fixedParseFloat } = require("../utils");
 const { upsertOrder } = require("./upsertOrder");
+
+const byFilled = (order) => order.status === ORDER_STATUS_FILLED;
+const byPosition = (order) => order.position;
 
 async function processOrder(trade, order, position) {
   if (
@@ -27,16 +29,17 @@ async function setTradeBoundaries(tradeId) {
     { new: true }
   );
 
-  const filledEntries = trade.entries.filter(
-    (entry) => entry.status === ORDER_STATUS_FILLED
-  );
+  const filledEntries = trade.entries.filter(byFilled);
+  const filledEntryPositionSum = addBy(filledEntries, byPosition);
 
-  const filledEntryPositionSum = addBy(
-    filledEntries,
-    (entry) => entry.position
-  );
+  const filledTakeProfits = trade.takeProfits.filter(byFilled);
+  const filledTPPositionSum = addBy(filledTakeProfits, byPosition);
 
-  await processOrder(trade, trade.stopLoss, filledEntryPositionSum);
+  await processOrder(
+    trade,
+    trade.stopLoss,
+    fixedParseFloat(filledEntryPositionSum - filledTPPositionSum)
+  );
 
   const { stepSize } = await ExchangeService.getMinimum(trade.symbol);
 

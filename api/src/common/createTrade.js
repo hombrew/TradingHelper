@@ -5,7 +5,7 @@ const { Trade, Order } = require("../services/db");
 const { upsertOrder } = require("./upsertOrder");
 const { deleteOrder } = require("./deleteOrder");
 const { getBreakEven } = require("./getBreakEven");
-const { findTradeById } = require("./findTradeById");
+const { findTradeById } = require("./findTrade");
 
 function deleteOrders(orderList) {
   return Promise.all(orderList.map(deleteOrder));

@@ -57,4 +57,33 @@ function filledOrder(input = {}) {
   };
 }
 
+function updatedPosition(order, position) {
+  return {
+    eventType: "ACCOUNT_UPDATE",
+    updateData: {
+      balances: [
+        {
+          asset: "USDT",
+          crossWalletBalance: "211.61595224",
+          walletBalance: "211.61595224",
+        },
+      ],
+      eventReasonType: "ORDER",
+      positions: [
+        {
+          accumulatedRealized: "1.27425999",
+          entryPrice: "0.00000",
+          isolatedWallet: "0",
+          marginType: "isolated",
+          positionAmount: String(position),
+          positionSide: "BOTH",
+          symbol: order.symbol,
+          unrealizedPnL: "0",
+        },
+      ],
+    },
+  };
+}
+
 module.exports.filledOrder = filledOrder;
+module.exports.updatedPosition = updatedPosition;

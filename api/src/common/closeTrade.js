@@ -5,8 +5,7 @@ const {
 } = require("../config/binance.contracts");
 const { ExchangeService } = require("../services");
 const { isObject } = require("../utils");
-const { findTradeById } = require("./findTradeById");
-const { findTradeAndUpdate } = require("./findTradeAndUpdate");
+const { findTradeById, findTradeAndUpdate } = require("./findTrade");
 const { cancelOrdersByStatus } = require("./cancelOrdersByStatus");
 
 async function closeTrade(tradeId, closePosition = false) {
