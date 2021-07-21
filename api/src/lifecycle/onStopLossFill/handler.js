@@ -7,8 +7,8 @@ async function onStopLossFillHandler(event) {
   const stopLoss = await findOrderAndUpdate(
     {
       symbol: stopLossObj.symbol,
-      type: stopLossObj.orderType,
-      price: stopLossObj.originalPrice,
+      type: stopLossObj.originalOrderType,
+      price: stopLossObj.stopPrice,
       position: stopLossObj.originalQuantity,
       status: ORDER_STATUS_CREATED,
     },

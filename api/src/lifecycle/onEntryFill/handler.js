@@ -7,7 +7,7 @@ async function onEntryFillHandler(event) {
   const entry = await findOrderAndUpdate(
     {
       symbol: entryObj.symbol,
-      type: entryObj.orderType,
+      type: entryObj.originalOrderType,
       price: entryObj.originalPrice,
       position: entryObj.originalQuantity,
       status: ORDER_STATUS_CREATED,

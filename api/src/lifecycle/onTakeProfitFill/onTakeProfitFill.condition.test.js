@@ -1,4 +1,6 @@
 const {
+  BINANCE_WS_EVENT_TYPE_ORDER_TRADE_UPDATE,
+  ORDER_TYPE_MARKET,
   ORDER_TYPE_LIMIT,
   ORDER_TYPE_TAKE_PROFIT_MARKET,
   ORDER_STATUS_CREATED,
@@ -41,8 +43,10 @@ describe("onTakeProfitFillCondition", () => {
 
   it("should pass validation when given the needed condition", () => {
     const input = {
+      eventType: BINANCE_WS_EVENT_TYPE_ORDER_TRADE_UPDATE,
       order: {
-        orderType: ORDER_TYPE_TAKE_PROFIT_MARKET,
+        orderType: ORDER_TYPE_MARKET,
+        originalOrderType: ORDER_TYPE_TAKE_PROFIT_MARKET,
         orderStatus: ORDER_STATUS_FILLED,
       },
     };

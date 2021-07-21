@@ -2,8 +2,10 @@ const { MessageService } = require("../services");
 const { connectDB } = require("../services/db");
 const { promiseFind } = require("../utils");
 const { QueueService, ExchangeService, LogService } = require("../services");
+const onEntryFill = require("./onEntryFill");
+const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
-const onPositionUpdate = require("./onPositionUpdate");
+// const onPositionUpdate = require("./onPositionUpdate");
 
 function tryEventHandler(event) {
   return async function ({ condition, handler, responder }) {
@@ -19,7 +21,7 @@ function tryEventHandler(event) {
 }
 
 QueueService.on(async (event) => {
-  const handlers = [onTakeProfitFill, onPositionUpdate].map(
+  const handlers = [onEntryFill, onTakeProfitFill, onStopLossFill].map(
     tryEventHandler(event)
   );
   return promiseFind(handlers, Boolean);
@@ -28,7 +30,7 @@ QueueService.on(async (event) => {
 async function onInit() {
   await connectDB();
   ExchangeService.onOrderUpdate(QueueService.add.bind(QueueService));
-  ExchangeService.onAccountUpdate(QueueService.add.bind(QueueService));
+  // ExchangeService.onAccountUpdate(QueueService.add.bind(QueueService));
 }
 
 module.exports.onInit = onInit;

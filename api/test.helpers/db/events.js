@@ -1,9 +1,9 @@
 const { ORDER_STATUS_FILLED } = require("../../src/config/binance.contracts");
 
 const transformationMap = {
+  type: "originalOrderType",
+  price: "stopPrice",
   position: "originalQuantity",
-  price: "originalPrice",
-  type: "orderType",
   reduceOnly: "isReduceOnly",
 };
 
@@ -28,7 +28,7 @@ function filledOrder(input = {}) {
       orderType: "LIMIT",
       timeInForce: "GTC",
       originalQuantity: "0.002",
-      originalPrice: "33000",
+      originalPrice: String(input.price),
       averagePrice: "0",
       stopPrice: "0",
       executionType: "NEW",
