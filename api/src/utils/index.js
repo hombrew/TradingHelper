@@ -1,17 +1,15 @@
 const addByFile = require("./addBy");
 const arrayFile = require("./array");
-const fixedParseFloatFile = require("./fixedParseFloat");
+const numberFile = require("./number");
 const isObjectFile = require("./isObject");
 const promiseFindFile = require("./promiseFind");
 const sleepFile = require("./sleep");
-const truncateFile = require("./truncate");
 
 module.exports = {
   ...addByFile,
   ...arrayFile,
-  ...fixedParseFloatFile,
+  ...numberFile,
   ...isObjectFile,
   ...promiseFindFile,
   ...sleepFile,
-  ...truncateFile,
 };

@@ -118,9 +118,9 @@ describe("onEntryFillHandler", () => {
       const takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0.021, "string");
       expectPositionAndOrderIdTypeToBe(takeProfits[1], 0.021, "string");
-      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.021, "string");
+      expectPositionAndOrderIdTypeToBe(takeProfits[2], 0.022, "string");
       const stopLoss = await db.data.findStopLoss();
-      expectPositionAndOrderIdTypeToBe(stopLoss, 0.063, "string");
+      expectPositionAndOrderIdTypeToBe(stopLoss, 0.064, "string");
     });
   });
 

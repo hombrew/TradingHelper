@@ -4,7 +4,7 @@ const {
   BINANCE_API_SECRET_KEY,
 } = require("../../config/constants");
 const { upsertOrder } = require("./order");
-const { fixTradeConfig, getEntryOrderConfiguration } = require("./calculator");
+const { calculateTradeValues } = require("./calculator/index");
 const { getMinimum } = require("./minimum");
 const { closePosition } = require("./position");
 const { LogService } = require("../LogService");
@@ -56,12 +56,8 @@ class ExchangeService {
     Object.keys(subscriptions).forEach(this.binance.websockets.terminate);
   }
 
-  prepareEntry(...args) {
-    return getEntryOrderConfiguration.call(this, ...args);
-  }
-
   fixTrade(trade) {
-    return fixTradeConfig.call(this, trade);
+    return calculateTradeValues.call(this, trade);
   }
 
   getMinimum(symbol) {
