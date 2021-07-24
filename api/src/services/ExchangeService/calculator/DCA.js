@@ -13,7 +13,12 @@ function generateSteps(total, length, size) {
 function generateDCA(trade) {
   const { entries, parts, direction, risked: totalRisked } = trade;
 
-  if (entries.length === 1) return trade;
+  if (entries.length === 1) {
+    return {
+      ...trade,
+      entries: [{ ...trade.entries[0], risked: totalRisked }],
+    };
+  }
 
   const risks = generateSteps(totalRisked, parts, "0.01");
 

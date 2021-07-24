@@ -9,7 +9,7 @@ const { ExchangeService } = require("../ExchangeService");
 
 jest.mock("../ExchangeService");
 
-function createTrade(direction, symbol, parts, risked, sl, [from, to]) {
+function createTrade(direction, symbol, parts = 1, risked, sl, entries) {
   const takeProfits = range(faker.datatype.number({ min: 1, max: 4 }));
   return {
     symbol: symbol,
@@ -20,14 +20,11 @@ function createTrade(direction, symbol, parts, risked, sl, [from, to]) {
       price: sl,
     },
     takeProfits: takeProfits.map(() => {
-      const min = Math.max(from, to) * 1.5;
+      const min = Math.max(...entries) * 1.5;
       const price = faker.datatype.number({ min, max: min * 3 });
       return { symbol, price };
     }),
-    entries: [
-      { symbol, price: from },
-      { symbol, price: to },
-    ],
+    entries: entries.map((price) => ({ symbol, price })),
   };
 }
 
@@ -45,6 +42,7 @@ describe("calculator", () => {
       4.69,
     ],
     [createShort("ENJUSDT", 3, 25, 1.4, [1.3, 1.35]), 1.43, 1.42, 1.42],
+    [createShort("BATUSDT", 1, 237, 0.6073, [0.555]), 1.43, 1.42, 1.42],
   ])("should return the correct value", async (trade, ...liquidations) => {
     const calculatedTrade = await calculateTradeValues.call(
       ExchangeService,
