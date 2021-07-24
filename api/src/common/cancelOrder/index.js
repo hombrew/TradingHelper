@@ -11,7 +11,6 @@ async function cancelOrder(order) {
 
   if (orderId && status === ORDER_STATUS_CREATED) {
     await ExchangeService.cancelOrder(symbol, { orderId });
-    // await ExchangeService.waitForOrderCancellation(order);
   }
 
   order.status = ORDER_STATUS_CANCELLED;

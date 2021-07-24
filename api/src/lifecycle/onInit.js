@@ -5,7 +5,6 @@ const { QueueService, ExchangeService, LogService } = require("../services");
 const onEntryFill = require("./onEntryFill");
 const onStopLossFill = require("./onStopLossFill");
 const onTakeProfitFill = require("./onTakeProfitFill");
-// const onPositionUpdate = require("./onPositionUpdate");
 
 function tryEventHandler(event) {
   return async function ({ condition, handler, responder }) {
@@ -30,7 +29,6 @@ QueueService.on(async (event) => {
 async function onInit() {
   await connectDB();
   ExchangeService.onOrderUpdate(QueueService.add.bind(QueueService));
-  // ExchangeService.onAccountUpdate(QueueService.add.bind(QueueService));
 }
 
 module.exports.onInit = onInit;

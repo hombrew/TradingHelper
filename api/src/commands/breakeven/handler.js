@@ -10,7 +10,6 @@ const {
   upsertOrder,
   findTradeById,
 } = require("../../common");
-const { truncate } = require("../../utils");
 
 async function takeTradeToBreakeven(tradeId) {
   const trade = await findTradeById(tradeId);
@@ -39,10 +38,6 @@ async function takeTradeToBreakeven(tradeId) {
   await cancelOrdersByStatus(trade.entries, ORDER_STATUS_CREATED);
   const stopLoss = trade.stopLoss;
   stopLoss.price = breakEven.price;
-  // stopLoss.stopPrice = truncate(
-  //   (breakEven.price + currentSymbolPrice) / 2,
-  //   breakEven.price
-  // );
   await upsertOrder(trade, stopLoss);
 }
 

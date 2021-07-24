@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "supervisor index.js",
     "start": "node index.js",
-    "test": "jest --coverage --detectOpenHandles --testEnvironment=node"
+    "test": "jest --coverage --detectOpenHandles --testEnvironment=node",
+    "sloc": "npx sloc --format cli-table --format-option head --exclude \"node_modules|coverage|\\.svg$\\.xml\" ./ "
   },
   "author": "Manuel Maldonado",
   "license": "ISC",

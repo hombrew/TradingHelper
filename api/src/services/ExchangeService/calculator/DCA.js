@@ -32,7 +32,6 @@ function generateDCA(trade) {
     };
   }
 
-  // SHORT
   const step = (entries[1].price - entries[0].price) / (parts - 1);
 
   const entryOrders = range(parts - 1).map((_, index) => {

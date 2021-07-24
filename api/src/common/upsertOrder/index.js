@@ -40,8 +40,6 @@ async function upsertOrder(directionOrTrade, order) {
     );
   }
 
-  // await ExchangeService.waitForOrderCreation(order);
-
   order.status = ORDER_STATUS_CREATED;
   order.orderId = String(response.orderId);
 
