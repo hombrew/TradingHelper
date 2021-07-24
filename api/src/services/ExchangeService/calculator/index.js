@@ -80,9 +80,9 @@ function calculateEntry(order, direction, stopLoss, minimum) {
 
 async function calculateTradeValues(trade) {
   const minimum = await this.getMinimum(trade.symbol);
-  const entries = generateDCA(trade, minimum).entries.map((order) => {
-    return calculateEntry(order, trade.direction, trade.stopLoss, minimum);
-  });
+  const entries = generateDCA(trade, minimum).entries.map((order) =>
+    calculateEntry(order, trade.direction, trade.stopLoss, minimum)
+  );
 
   return checkTrade({ ...trade, entries }, minimum);
 }
