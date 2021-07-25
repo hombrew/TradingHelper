@@ -1,5 +1,9 @@
 const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
-const { findOrderAndUpdate, setTradeBoundaries } = require("../../common");
+const {
+  findOrderAndUpdate,
+  setTradeBoundaries,
+  fixPositionMargin,
+} = require("../../common");
 
 async function onEntryFillHandler(event) {
   const entryObj = event.order;
@@ -18,6 +22,8 @@ async function onEntryFillHandler(event) {
   if (!entry) {
     return;
   }
+
+  await fixPositionMargin(event);
 
   return setTradeBoundaries(entry.trade._id);
 }

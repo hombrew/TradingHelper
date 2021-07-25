@@ -6,16 +6,45 @@ const {
   APEX_LOGS_PROJECT_ID,
 } = require("../../config/constants");
 
-const apex = new ApexLogsTransport({
-  url: APEX_LOGS_URL,
-  authToken: APEX_LOGS_AUTH_TOKEN,
-  projectId: APEX_LOGS_PROJECT_ID,
-});
+class LogService {
+  constructor(url, authToken, projectId) {
+    const apex = new ApexLogsTransport({
+      url,
+      authToken,
+      projectId,
+    });
 
-const logger = winston.createLogger({
-  levels: winston.config.syslog.levels,
-  transports: [apex],
-  defaultMeta: { program: "api", host: "api-01" },
-});
+    const logger = winston.createLogger({
+      levels: winston.config.syslog.levels,
+      transports: [apex],
+      defaultMeta: { program: "api", host: "api-01" },
+    });
 
-module.exports.LogService = logger;
+    this.logger = logger;
+  }
+
+  info(message, ...params) {
+    const data = this._extractData(params);
+    this.logger.info(message, { data });
+  }
+
+  error(message, ...params) {
+    const error = this._extractData(params);
+    this.logger.error(message, { error });
+  }
+
+  warn(message, ...params) {
+    const warning = this._extractData(params);
+    this.logger.warning(message, { warning });
+  }
+
+  _extractData(params) {
+    return params.length === 1 ? params[0] : params;
+  }
+}
+
+module.exports.LogService = new LogService(
+  APEX_LOGS_URL,
+  APEX_LOGS_AUTH_TOKEN,
+  APEX_LOGS_PROJECT_ID
+);

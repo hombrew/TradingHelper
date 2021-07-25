@@ -268,3 +268,24 @@ api       |     "origType": "LIMIT",
 api       |     "updateTime": 1625797088496
 api       |   }
 api       | ]
+
+
+
+POSITION RISK
+[
+    {
+        "entryPrice": "0.00000",
+        "marginType": "isolated", 
+        "isAutoAddMargin": "false",
+        "isolatedMargin": "0.00000000", 
+        "leverage": "10", 
+        "liquidationPrice": "0", 
+        "markPrice": "6679.50671178",   
+        "maxNotionalValue": "20000000", 
+        "positionAmt": "0.000", 
+        "symbol": "BTCUSDT", 
+        "unRealizedProfit": "0.00000000", 
+        "positionSide": "BOTH",
+        "updateTime": 0
+    }
+]

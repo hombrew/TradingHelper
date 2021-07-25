@@ -33,8 +33,11 @@ async function upsertOrder(directionOrTrade, order) {
     order.toObject()
   );
 
+  const logMethod = response.orderId ? "info" : "error";
+
+  LogService[logMethod]("[UPSER ORDER RESPONSE]", response);
+
   if (!response.orderId) {
-    LogService.error("Order upsert", response);
     throw new Error(
       `Imposibble to add order ${order.symbol} of price ${order.price}`
     );

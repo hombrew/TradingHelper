@@ -6,7 +6,7 @@ const {
 const { upsertOrder } = require("./order");
 const { calculateTradeValues } = require("./calculator/index");
 const { getMinimum } = require("./minimum");
-const { closePosition } = require("./position");
+const { closePosition, getOpenPositions } = require("./position");
 const { LogService } = require("../LogService");
 
 const noop = () => {};
@@ -77,8 +77,20 @@ class ExchangeService {
     return upsertOrder.call(this, direction, order);
   }
 
+  getOpenPositions(symbol) {
+    return getOpenPositions.call(this, symbol);
+  }
+
   closePosition(...args) {
     return closePosition.call(this, ...args);
+  }
+
+  addPositionMargin(symbol, amount) {
+    return this.binance.futuresPositionMargin(symbol, amount, 1);
+  }
+
+  reducePositionMargin(symbol, amount) {
+    return this.binance.futuresPositionMargin(symbol, amount, 2);
   }
 }
 

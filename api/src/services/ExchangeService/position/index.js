@@ -8,8 +8,17 @@ const method = {
   [TRADE_DIRECTION_SHORT]: "futuresMarketBuy",
 };
 
+async function getOpenPositions(symbol) {
+  const allPositions = await this.binance.futuresPositionRisk();
+  return allPositions.filter(
+    ({ positionAmt, symbol: currentSymbol }) =>
+      Number(positionAmt) > 0 && currentSymbol === symbol
+  );
+}
+
 async function closePosition(direction, { symbol, position }) {
   await this.binance[method[direction]](symbol, position, { reduceOnly: true });
 }
 
+module.exports.getOpenPositions = getOpenPositions;
 module.exports.closePosition = closePosition;

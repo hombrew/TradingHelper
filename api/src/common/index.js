@@ -1,4 +1,5 @@
 const cancelOrder = require("./cancelOrder");
+const fixPositionMargin = require("./fixPositionMargin");
 const cancelOrdersByStatus = require("./cancelOrdersByStatus");
 const closeTrade = require("./closeTrade");
 const createTrade = require("./createTrade");
@@ -13,6 +14,7 @@ const setTradeBoundaries = require("./setTradeBoundaries");
 
 module.exports = {
   ...cancelOrder,
+  ...fixPositionMargin,
   ...cancelOrdersByStatus,
   ...closeTrade,
   ...createTrade,
