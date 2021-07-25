@@ -5,6 +5,7 @@ const {
   fixPositionMargin,
 } = require("../../common");
 const { LogService } = require("../../services");
+const { fixedParseFloat } = require("../../utils");
 
 async function onEntryFillHandler(event) {
   const entryObj = event.order;
@@ -13,8 +14,8 @@ async function onEntryFillHandler(event) {
     {
       symbol: entryObj.symbol,
       type: entryObj.originalOrderType,
-      price: entryObj.originalPrice,
-      position: entryObj.originalQuantity,
+      price: fixedParseFloat(entryObj.originalPrice),
+      position: fixedParseFloat(entryObj.originalQuantity),
       status: ORDER_STATUS_CREATED,
     },
     { status: entryObj.orderStatus }
@@ -27,7 +28,7 @@ async function onEntryFillHandler(event) {
   const response = await setTradeBoundaries(entry.trade._id);
 
   try {
-    await fixPositionMargin(event);
+    await fixPositionMargin(entry.symbol);
   } catch (e) {
     LogService.error("[FIX POSITION MARGIN ERROR]", e, event);
   }

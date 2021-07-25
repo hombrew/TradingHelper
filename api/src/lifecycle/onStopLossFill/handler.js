@@ -1,4 +1,5 @@
 const { findOrderAndUpdate, closeTrade } = require("../../common");
+const { fixedParseFloat } = require("../../utils");
 const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
 
 async function onStopLossFillHandler(event) {
@@ -8,8 +9,8 @@ async function onStopLossFillHandler(event) {
     {
       symbol: stopLossObj.symbol,
       type: stopLossObj.originalOrderType,
-      price: stopLossObj.stopPrice,
-      position: stopLossObj.originalQuantity,
+      price: fixedParseFloat(stopLossObj.stopPrice),
+      position: fixedParseFloat(stopLossObj.originalQuantity),
       status: ORDER_STATUS_CREATED,
     },
     { status: stopLossObj.orderStatus }

@@ -1,4 +1,3 @@
-const { fixedParseFloat } = require("../../utils");
 const {
   getBreakEven,
   cancelOrdersByStatus,
@@ -7,7 +6,7 @@ const {
   findTradeById,
   closeTrade,
 } = require("../../common");
-const { uniqBy } = require("../../utils");
+const { uniqBy, fixedParseFloat } = require("../../utils");
 const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 
@@ -50,8 +49,8 @@ async function onTakeProfitFillHandler(event) {
     {
       symbol: takeProfitObj.symbol,
       type: takeProfitObj.originalOrderType,
-      price: takeProfitObj.stopPrice,
-      position: takeProfitObj.originalQuantity,
+      price: fixedParseFloat(takeProfitObj.stopPrice),
+      position: fixedParseFloat(takeProfitObj.originalQuantity),
       status: ORDER_STATUS_CREATED,
     },
     { status: takeProfitObj.orderStatus }

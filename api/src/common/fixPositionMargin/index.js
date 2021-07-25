@@ -10,9 +10,7 @@ const byFilled = (order) => order.status === ORDER_STATUS_FILLED;
 const byPosition = (order) => order.position;
 const byBalance = (order) => order.balance;
 
-async function fixPositionMargin(event) {
-  const { symbol } = event.order;
-
+async function fixPositionMargin(symbol) {
   const [position] = await ExchangeService.getOpenPositions(symbol);
   const currentMargin = fixedParseFloat(position.isolatedMargin);
 
@@ -45,12 +43,6 @@ async function fixPositionMargin(event) {
     currentMargin,
     response,
   });
-
-  return {
-    neededMargin,
-    currentMargin,
-    response,
-  };
 }
 
 module.exports.fixPositionMargin = fixPositionMargin;
