@@ -1,11 +1,8 @@
-const { db } = require("../../../test.helpers");
-const { handler: createTrade } = require("../../commands/create");
+const { db, trades } = require("../../../test.helpers");
 const {
   ORDER_STATUS_FILLED,
   ORDER_STATUS_CREATED,
 } = require("../../config/binance.contracts");
-const { handler: onEntryFillHandler } = require(".");
-const { ExchangeService } = require("../../services");
 
 jest.mock("../../services/LogService/LogService");
 jest.mock("../../services/ExchangeService/ExchangeService");
@@ -14,40 +11,6 @@ jest.mock("../../services/MessageService/MessageService");
 function expectPositionAndOrderIdTypeToBe(order, position, orderIdType) {
   expect(order.position).toBe(position);
   expect(typeof order.orderId).toBe(orderIdType);
-}
-
-async function onEntryFillByEntryOrder(input = {}) {
-  const filledOrders = await db.data.findEntries(input);
-  const filledOrderEvent = db.events.filledOrder(filledOrders[0].toObject());
-  return onEntryFillHandler(filledOrderEvent);
-}
-
-function commandCreateLongTrade(input = {}) {
-  ExchangeService.getPrice.mockImplementationOnce(() => 34000);
-  return createTrade({
-    symbol: "BTCUSDT",
-    direction: "LONG",
-    entries: [31000, 30000],
-    risked: 100,
-    parts: 3,
-    stopLoss: 29000,
-    takeProfits: [33000, 34000, 35000],
-    ...input,
-  });
-}
-
-function commandCreateShortTrade(input = {}) {
-  ExchangeService.getPrice.mockImplementationOnce(() => 30000);
-  return createTrade({
-    symbol: "BTCUSDT",
-    direction: "SHORT",
-    entries: [33000, 35000],
-    risked: 100,
-    parts: 3,
-    stopLoss: 36000,
-    takeProfits: [31000, 30500, 30000],
-    ...input,
-  });
 }
 
 describe("onEntryFillHandler", () => {
@@ -63,7 +26,7 @@ describe("onEntryFillHandler", () => {
 
   describe("LONG", () => {
     it("should create stopLoss and takeProfit orders", async () => {
-      await commandCreateLongTrade();
+      await trades.commandCreateLongTrade();
 
       let takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0, "undefined");
@@ -72,7 +35,7 @@ describe("onEntryFillHandler", () => {
       let stopLoss = await db.data.findStopLoss();
       expectPositionAndOrderIdTypeToBe(stopLoss, 0, "undefined");
 
-      await onEntryFillByEntryOrder({ price: 31000 });
+      await trades.onEntryFillByEntryOrder({ price: 31000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_CREATED);
@@ -87,10 +50,10 @@ describe("onEntryFillHandler", () => {
     });
 
     it("should update stopLoss and takeProfit orders", async () => {
-      await commandCreateLongTrade();
+      await trades.commandCreateLongTrade();
 
-      await onEntryFillByEntryOrder({ price: 31000 });
-      await onEntryFillByEntryOrder({ price: 30500 });
+      await trades.onEntryFillByEntryOrder({ price: 31000 });
+      await trades.onEntryFillByEntryOrder({ price: 30500 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_FILLED);
@@ -105,11 +68,11 @@ describe("onEntryFillHandler", () => {
     });
 
     it("should update stopLoss and takeProfit orders", async () => {
-      await commandCreateLongTrade();
+      await trades.commandCreateLongTrade();
 
-      await onEntryFillByEntryOrder({ price: 31000 });
-      await onEntryFillByEntryOrder({ price: 30500 });
-      await onEntryFillByEntryOrder({ price: 30000 });
+      await trades.onEntryFillByEntryOrder({ price: 31000 });
+      await trades.onEntryFillByEntryOrder({ price: 30500 });
+      await trades.onEntryFillByEntryOrder({ price: 30000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_FILLED);
@@ -126,7 +89,7 @@ describe("onEntryFillHandler", () => {
 
   describe("SHORT", () => {
     it("should create stopLoss and takeProfit orders", async () => {
-      await commandCreateShortTrade();
+      await trades.commandCreateShortTrade();
 
       let takeProfits = await db.data.findTakeProfits();
       expectPositionAndOrderIdTypeToBe(takeProfits[0], 0, "undefined");
@@ -135,7 +98,7 @@ describe("onEntryFillHandler", () => {
       let stopLoss = await db.data.findStopLoss();
       expectPositionAndOrderIdTypeToBe(stopLoss, 0, "undefined");
 
-      await onEntryFillByEntryOrder({ price: 33000 });
+      await trades.onEntryFillByEntryOrder({ price: 33000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_CREATED);
@@ -150,10 +113,10 @@ describe("onEntryFillHandler", () => {
     });
 
     it("should update stopLoss and takeProfit orders", async () => {
-      await commandCreateShortTrade();
+      await trades.commandCreateShortTrade();
 
-      await onEntryFillByEntryOrder({ price: 33000 });
-      await onEntryFillByEntryOrder({ price: 34000 });
+      await trades.onEntryFillByEntryOrder({ price: 33000 });
+      await trades.onEntryFillByEntryOrder({ price: 34000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_FILLED);
@@ -168,11 +131,11 @@ describe("onEntryFillHandler", () => {
     });
 
     it("should update stopLoss and takeProfit orders", async () => {
-      await commandCreateShortTrade();
+      await trades.commandCreateShortTrade();
 
-      await onEntryFillByEntryOrder({ price: 33000 });
-      await onEntryFillByEntryOrder({ price: 34000 });
-      await onEntryFillByEntryOrder({ price: 35000 });
+      await trades.onEntryFillByEntryOrder({ price: 33000 });
+      await trades.onEntryFillByEntryOrder({ price: 34000 });
+      await trades.onEntryFillByEntryOrder({ price: 35000 });
       const entries = await db.data.findEntries();
       expect(entries[0].status).toBe(ORDER_STATUS_FILLED);
       expect(entries[1].status).toBe(ORDER_STATUS_FILLED);

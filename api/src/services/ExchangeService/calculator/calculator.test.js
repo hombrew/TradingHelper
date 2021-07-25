@@ -3,14 +3,20 @@ const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
 } = require("../../../config/constants");
-const { range } = require("../../../utils");
+const { range, uniqBy } = require("../../../utils");
 const { calculateTradeValues } = require(".");
 const { ExchangeService } = require("../ExchangeService");
 
 jest.mock("../ExchangeService");
 
 function createTrade(direction, symbol, parts = 1, risked, sl, entries) {
-  const takeProfits = range(faker.datatype.number({ min: 1, max: 4 }));
+  const takeProfits = range(faker.datatype.number({ min: 1, max: 4 })).map(
+    () => {
+      const min = Math.max(...entries) * 1.5;
+      const price = faker.datatype.number({ min, max: min * 3 });
+      return { symbol, price };
+    }
+  );
   return {
     symbol: symbol,
     direction: direction,
@@ -19,11 +25,7 @@ function createTrade(direction, symbol, parts = 1, risked, sl, entries) {
     stopLoss: {
       price: sl,
     },
-    takeProfits: takeProfits.map(() => {
-      const min = Math.max(...entries) * 1.5;
-      const price = faker.datatype.number({ min, max: min * 3 });
-      return { symbol, price };
-    }),
+    takeProfits: uniqBy(takeProfits, (order) => order.price),
     entries: entries.map((price) => ({ symbol, price })),
   };
 }
@@ -42,13 +44,12 @@ describe("calculator", () => {
       4.69,
     ],
     [createShort("ENJUSDT", 3, 25, 1.4, [1.3, 1.35]), 1.43, 1.42, 1.42],
-    [createShort("BATUSDT", 1, 237, 0.6073, [0.555]), 1.43, 1.42, 1.42],
+    [createShort("BATUSDT", 1, 237, 0.6073, [0.555]), 0.63],
   ])("should return the correct value", async (trade, ...liquidations) => {
     const calculatedTrade = await calculateTradeValues.call(
       ExchangeService,
       trade
     );
-
     liquidations.forEach((liquidation, index) => {
       expect(calculatedTrade.entries[index].liquidation).toBe(liquidation);
     });

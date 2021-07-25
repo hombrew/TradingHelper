@@ -1,7 +1,7 @@
 const { ORDER_TYPE_LIMIT } = require("../../../config/binance.contracts");
 const { TRADE_DIRECTION_LONG } = require("../../../config/constants");
 const { closePosition } = require(".");
-const { flushPromises } = require("../../../../test.helpers");
+const { flushPromises } = require("../../../../test.helpers/flushPromises");
 
 const bw = {
   binance: {

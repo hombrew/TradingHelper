@@ -1,4 +1,5 @@
-const { flushPromises, mockConsole } = require("../../../test.helpers");
+const { flushPromises } = require("../../../test.helpers/flushPromises");
+const { mockConsole } = require("../../../test.helpers/mockConsole");
 const { sleep } = require("../../utils");
 const { QueueService } = require(".");
 

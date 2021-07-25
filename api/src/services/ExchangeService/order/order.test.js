@@ -8,7 +8,7 @@ const {
   TRADE_DIRECTION_SHORT,
 } = require("../../../config/constants");
 const { upsertOrder } = require(".");
-const { flushPromises } = require("../../../../test.helpers");
+const { flushPromises } = require("../../../../test.helpers/flushPromises");
 
 const bw = {
   binance: {

@@ -17,6 +17,30 @@ ExchangeService.upsertOrder = jest.fn().mockImplementation(() => {
   return { orderId: 123456 };
 });
 
+ExchangeService.getOpenPositions = jest
+  .fn()
+  .mockImplementation(async (symbol) => {
+    return [
+      {
+        entryPrice: "0.00000",
+        marginType: "isolated",
+        isAutoAddMargin: "false",
+        isolatedMargin: "0.00000000",
+        leverage: "10",
+        liquidationPrice: "0",
+        markPrice: "6679.50671178",
+        maxNotionalValue: "20000000",
+        positionAmt: "6.13",
+        symbol,
+        unRealizedProfit: "0.00000000",
+        positionSide: "BOTH",
+        updateTime: 0,
+      },
+    ];
+  });
+
+ExchangeService.addPositionMargin = jest.fn();
+
 ExchangeService.getMinimum = jest.fn().mockImplementation(async (symbol) => {
   const minimums = {
     BTCUSDT: {

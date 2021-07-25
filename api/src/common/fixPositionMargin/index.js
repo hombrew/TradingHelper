@@ -36,7 +36,7 @@ async function fixPositionMargin(event) {
   if (neededMargin > currentMargin) {
     response = await ExchangeService.addPositionMargin(
       symbol,
-      round(neededMargin - currentMargin)
+      round(neededMargin - currentMargin, 2)
     );
   }
 
@@ -45,6 +45,12 @@ async function fixPositionMargin(event) {
     currentMargin,
     response,
   });
+
+  return {
+    neededMargin,
+    currentMargin,
+    response,
+  };
 }
 
 module.exports.fixPositionMargin = fixPositionMargin;

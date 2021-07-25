@@ -4,6 +4,7 @@ const {
   setTradeBoundaries,
   fixPositionMargin,
 } = require("../../common");
+const { LogService } = require("../../services");
 
 async function onEntryFillHandler(event) {
   const entryObj = event.order;
@@ -23,9 +24,15 @@ async function onEntryFillHandler(event) {
     return;
   }
 
-  await fixPositionMargin(event);
+  const response = await setTradeBoundaries(entry.trade._id);
 
-  return setTradeBoundaries(entry.trade._id);
+  try {
+    await fixPositionMargin(event);
+  } catch (e) {
+    LogService.error("[FIX POSITION MARGIN ERROR]", e, event);
+  }
+
+  return response;
 }
 
 module.exports = onEntryFillHandler;

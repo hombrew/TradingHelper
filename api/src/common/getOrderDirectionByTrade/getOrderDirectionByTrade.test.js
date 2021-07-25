@@ -2,7 +2,7 @@ const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
 } = require("../../config/constants");
-const { db } = require("../../../test.helpers");
+const db = require("../../../test.helpers/db");
 const { getOrderDirectionByTrade } = require(".");
 
 describe("getOrderDirectionByTrade", () => {

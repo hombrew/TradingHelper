@@ -97,7 +97,11 @@ function createTrade(input = {}) {
 function findTrade(input = {}) {
   return Trade.findOne({
     ...input,
-  });
+  })
+    .populate("entries")
+    .populate("takeProfits")
+    .populate("stopLoss")
+    .exec();
 }
 
 module.exports.createEntry = createEntry;
