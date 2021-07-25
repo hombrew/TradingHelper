@@ -10,7 +10,8 @@ function generateSteps(total, length, size) {
   });
 }
 
-function generateDCA(trade) {
+function generateDCA(trade, minimum) {
+  const { tickSize } = minimum;
   const { entries, parts, direction, risked: totalRisked } = trade;
 
   if (entries.length === 1) {
@@ -26,7 +27,7 @@ function generateDCA(trade) {
     const step = (entries[0].price - entries[1].price) / (parts - 1);
 
     const entryOrders = range(parts - 1).map((_, index) => {
-      const price = fixedParseFloat(entries[0].price - step * (index + 1));
+      const price = truncate(entries[0].price - step * (index + 1), tickSize);
       const risked = risks[index + 1];
       return { ...entries[0], price, risked };
     });
@@ -40,7 +41,7 @@ function generateDCA(trade) {
   const step = (entries[1].price - entries[0].price) / (parts - 1);
 
   const entryOrders = range(parts - 1).map((_, index) => {
-    const price = fixedParseFloat(entries[0].price + step * (index + 1));
+    const price = truncate(entries[0].price + step * (index + 1), tickSize);
     const risked = risks[index + 1];
     return { ...entries[0], price, risked };
   });

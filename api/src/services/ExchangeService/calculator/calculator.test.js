@@ -43,6 +43,7 @@ describe("calculator", () => {
       4.63,
       4.69,
     ],
+    [createLong("1INCHUSDT", 4, 4, 1.8, [1.96, 1.92]), 1.73, 1.75, 1.74, 1.76],
     [createShort("ENJUSDT", 3, 25, 1.4, [1.3, 1.35]), 1.43, 1.42, 1.42],
     [createShort("BATUSDT", 1, 237, 0.6073, [0.555]), 0.63],
   ])("should return the correct value", async (trade, ...liquidations) => {
