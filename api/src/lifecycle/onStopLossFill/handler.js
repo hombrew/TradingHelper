@@ -1,5 +1,6 @@
 const { findOrderAndUpdate, closeTrade } = require("../../common");
 const { fixedParseFloat } = require("../../utils");
+const { LogService } = require("../../services");
 const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
 
 async function onStopLossFillHandler(event) {
@@ -17,6 +18,7 @@ async function onStopLossFillHandler(event) {
   );
 
   if (!stopLoss) {
+    LogService.warn("[ON STOP LOSS FILL ORDER NOT FOUND]", event);
     return;
   }
 

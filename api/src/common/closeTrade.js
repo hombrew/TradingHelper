@@ -1,11 +1,13 @@
 const {
   ORDER_STATUS_CREATED,
+  TRADE_STATUS_CREATED,
   TRADE_STATUS_IN_PROGRESS,
   TRADE_STATUS_COMPLETED,
 } = require("../config/binance.contracts");
-const { ExchangeService } = require("../services");
+const { ExchangeService, LogService } = require("../services");
 const { isObject } = require("../utils");
 const { findTradeById, findTradeAndUpdate } = require("./findTrade");
+const { deleteTrade } = require("./deleteTrade");
 const { cancelOrdersByStatus } = require("./cancelOrdersByStatus");
 
 async function closeTrade(tradeId, closePosition = false) {
@@ -24,10 +26,27 @@ async function closeTrade(tradeId, closePosition = false) {
   );
 
   if (trade.status === TRADE_STATUS_IN_PROGRESS && closePosition) {
-    await ExchangeService.closePosition(trade.direction, trade.stopLoss);
+    try {
+      const response = await ExchangeService.closePosition(
+        trade.direction,
+        trade.stopLoss
+      );
+      LogService.info("[EXCHANGE CLOSE POSITION RESPONSE]", {
+        tradeId,
+        response,
+      });
+    } catch (error) {
+      LogService.error("[EXCHANGE CLOSE POSITION ERROR]", { tradeId, error });
+    }
   }
 
-  return findTradeById(tradeId);
+  trade = await findTradeById(tradeId);
+
+  if (trade.status === TRADE_STATUS_CREATED) {
+    await deleteTrade(tradeId);
+  }
+
+  return trade;
 }
 
 module.exports.closeTrade = closeTrade;

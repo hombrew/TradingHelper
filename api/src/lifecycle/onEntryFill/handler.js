@@ -22,6 +22,7 @@ async function onEntryFillHandler(event) {
   );
 
   if (!entry) {
+    LogService.warn("[ON ENTRY FILL ORDER NOT FOUND]", event);
     return;
   }
 

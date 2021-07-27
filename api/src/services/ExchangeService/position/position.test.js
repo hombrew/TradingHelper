@@ -3,6 +3,8 @@ const { TRADE_DIRECTION_LONG } = require("../../../config/constants");
 const { closePosition } = require(".");
 const { flushPromises } = require("../../../../test.helpers/flushPromises");
 
+jest.mock("../../LogService/LogService");
+
 const bw = {
   binance: {
     futuresMarketBuy: jest.fn(),

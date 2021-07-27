@@ -7,6 +7,7 @@ const {
   closeTrade,
 } = require("../../common");
 const { uniqBy, fixedParseFloat } = require("../../utils");
+const { LogService } = require("../../services");
 const { ORDER_STATUS_CREATED } = require("../../config/binance.contracts");
 const { TRADE_DIRECTION_LONG } = require("../../config/constants");
 
@@ -57,6 +58,7 @@ async function onTakeProfitFillHandler(event) {
   );
 
   if (!takeProfit) {
+    LogService.warn("[ON TAKE PROFIT FILL ORDER NOT FOUND]", event);
     return;
   }
 
