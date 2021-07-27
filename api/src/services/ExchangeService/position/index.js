@@ -2,6 +2,7 @@ const {
   TRADE_DIRECTION_LONG,
   TRADE_DIRECTION_SHORT,
 } = require("../../../config/constants");
+const { fixedParseFloat } = require("../../../utils");
 const { LogService } = require("../../LogService");
 
 const method = {
@@ -14,7 +15,7 @@ async function getOpenPositions(symbol) {
   LogService.info("[OPEN POSITIONS]", { symbol, positions: allPositions });
   return allPositions.filter(
     ({ positionAmt, symbol: currentSymbol }) =>
-      Number(positionAmt) > 0 && currentSymbol === symbol
+      Math.abs(fixedParseFloat(positionAmt)) > 0 && currentSymbol === symbol
   );
 }
 
