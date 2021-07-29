@@ -2,13 +2,13 @@ const {
   TRADE_STATUS_IN_PROGRESS,
   ORDER_STATUS_FILLED,
 } = require("../../config/binance.contracts");
-const { ExchangeService, LogService } = require("../../services");
+const { ExchangeService } = require("../../services");
 const { addBy, fixedParseFloat, round } = require("../../utils");
 const { findTrades } = require("../findTrade");
 
 const byFilled = (order) => order.status === ORDER_STATUS_FILLED;
 const byPosition = (order) => order.position;
-const byBalance = (order) => order.balance;
+const byBalance = (order) => order.minBalance;
 
 async function fixPositionMargin(symbol) {
   const [position] = await ExchangeService.getOpenPositions(symbol);
@@ -30,19 +30,12 @@ async function fixPositionMargin(symbol) {
     return result + margin;
   }, 0);
 
-  let response = null;
   if (neededMargin > currentMargin) {
-    response = await ExchangeService.addPositionMargin(
+    await ExchangeService.addPositionMargin(
       symbol,
       round(neededMargin - currentMargin, 2)
     );
   }
-
-  LogService.info(`[${symbol} POSITION MARGIN]`, {
-    neededMargin,
-    currentMargin,
-    response,
-  });
 }
 
 module.exports.fixPositionMargin = fixPositionMargin;

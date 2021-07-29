@@ -15,10 +15,7 @@ async function closeTrade(tradeId, closePosition = false) {
     tradeId = tradeId._id;
   }
 
-  let trade = await findTradeAndUpdate(
-    { _id: tradeId },
-    { status: TRADE_STATUS_COMPLETED }
-  );
+  let trade = await findTradeById(tradeId);
 
   await cancelOrdersByStatus(
     [...trade.entries, ...trade.takeProfits, trade.stopLoss],
@@ -40,13 +37,16 @@ async function closeTrade(tradeId, closePosition = false) {
     }
   }
 
-  trade = await findTradeById(tradeId);
+  const toSend = await findTradeAndUpdate(
+    { _id: tradeId },
+    { status: TRADE_STATUS_COMPLETED }
+  );
 
   if (trade.status === TRADE_STATUS_CREATED) {
     await deleteTrade(tradeId);
   }
 
-  return trade;
+  return toSend;
 }
 
 module.exports.closeTrade = closeTrade;

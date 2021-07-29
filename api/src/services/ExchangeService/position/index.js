@@ -3,7 +3,6 @@ const {
   TRADE_DIRECTION_SHORT,
 } = require("../../../config/constants");
 const { fixedParseFloat } = require("../../../utils");
-const { LogService } = require("../../LogService");
 
 const method = {
   [TRADE_DIRECTION_LONG]: "futuresMarketSell",
@@ -12,7 +11,6 @@ const method = {
 
 async function getOpenPositions(symbol) {
   const allPositions = await this.binance.futuresPositionRisk();
-  LogService.info("[OPEN POSITIONS]", { symbol, positions: allPositions });
   return allPositions.filter(
     ({ positionAmt, symbol: currentSymbol }) =>
       Math.abs(fixedParseFloat(positionAmt)) > 0 && currentSymbol === symbol
