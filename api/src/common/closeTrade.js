@@ -4,7 +4,7 @@ const {
   TRADE_STATUS_IN_PROGRESS,
   TRADE_STATUS_COMPLETED,
 } = require("../config/binance.contracts");
-const { ExchangeService, LogService } = require("../services");
+const { ExchangeService } = require("../services");
 const { isObject } = require("../utils");
 const { findTradeById, findTradeAndUpdate } = require("./findTrade");
 const { deleteTrade } = require("./deleteTrade");
@@ -23,18 +23,7 @@ async function closeTrade(tradeId, closePosition = false) {
   );
 
   if (trade.status === TRADE_STATUS_IN_PROGRESS && closePosition) {
-    try {
-      const response = await ExchangeService.closePosition(
-        trade.direction,
-        trade.stopLoss
-      );
-      LogService.info("[EXCHANGE CLOSE POSITION RESPONSE]", {
-        tradeId,
-        response,
-      });
-    } catch (error) {
-      LogService.error("[EXCHANGE CLOSE POSITION ERROR]", { tradeId, error });
-    }
+    await ExchangeService.closePosition(trade.direction, trade.stopLoss);
   }
 
   const toSend = await findTradeAndUpdate(
