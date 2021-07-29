@@ -35,13 +35,13 @@ describe("fixPositionMargin", () => {
   it("should call addPosition margin", async () => {
     await trades.commandCreateLongTrade();
     ExchangeService.getOpenPositions.mockResolvedValue([
-      { isolatedMargin: "40" },
+      { isolatedMargin: "32" },
     ]);
     await trades.onEntryFillByEntryOrder({ price: 31000 });
     expect(ExchangeService.addPositionMargin).toHaveBeenNthCalledWith(
       1,
       "BTCUSDT",
-      2.18
+      7.45
     );
   });
 });

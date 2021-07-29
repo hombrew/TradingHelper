@@ -23,7 +23,7 @@ function translate(trade) {
     text += `🤒 Status: ${getStatus(trade)}\n`;
   }
 
-  text += `${getTradeDirection(trade)} ${direction}\n`;
+  text += `${getTradeDirection(trade)} Direction: ${direction}\n`;
   text += `🚀 Max risk: ${risked}\n`;
   text += `🏛️ Currently risked: ${currentlyRisked}\n`;
   text += `💣 Stop Loss: ${stopLoss.price}\n`;

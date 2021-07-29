@@ -1,11 +1,8 @@
-const { closeTrade, findTradeById } = require("../../common");
+const { closeTrade } = require("../../common");
 
 async function closeTrades(tradeIds) {
-  const tradePromises = tradeIds.map(async (id) =>
-    closeTrade(await findTradeById(id), true)
-  );
-  await Promise.all(tradePromises);
-  return Promise.all(tradeIds.map(findTradeById));
+  const tradePromises = tradeIds.map(async (id) => closeTrade(id, true));
+  return Promise.all(tradePromises);
 }
 
 module.exports = closeTrades;
