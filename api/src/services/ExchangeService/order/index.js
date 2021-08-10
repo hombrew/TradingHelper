@@ -34,6 +34,7 @@ async function upsertOrder(direction, order) {
     if (type === ORDER_TYPE_LIMIT) {
       await this.binance.futuresMarginType(symbol, "ISOLATED");
       await this.binance.futuresLeverage(symbol, leverage);
+      await sleep(200);
     }
 
     if (
@@ -56,7 +57,7 @@ async function upsertOrder(direction, order) {
     throw e;
   }
 
-  await sleep(150);
+  await sleep(200);
 
   return response;
 }
