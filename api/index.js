@@ -5,7 +5,11 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const { onInit, onExit } = require("./src/lifecycle");
-const { MessageService, LogService } = require("./src/services");
+const {
+  MessageService,
+  LogService,
+  ExchangeService,
+} = require("./src/services");
 const { executeCommand } = require("./src/commands");
 const { decodeCommand } = require("./src/commands/decoder");
 
@@ -41,6 +45,7 @@ app.post("/telegram_webhook", async (req, res) => {
 
 app.listen(5000, () => {
   console.info("Listening @ port 5000");
+  ExchangeService.getAccountBalance();
   onInit();
   onExit();
 });

@@ -13,6 +13,8 @@ ExchangeService.fixTrade = calculateTradeValues.bind(ExchangeService);
 
 ExchangeService.cancelOrder = jest.fn();
 
+ExchangeService.getAccountBalance = jest.fn().mockResolvedValue(500);
+
 ExchangeService.upsertOrder = jest.fn().mockImplementation(() => {
   return { orderId: 123456 };
 });

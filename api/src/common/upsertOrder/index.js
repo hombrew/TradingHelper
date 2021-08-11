@@ -39,7 +39,7 @@ async function upsertOrder(directionOrTrade, order) {
 
   if (!response.orderId) {
     throw new Error(
-      `Imposibble to add order ${order.symbol} of price ${order.price}`
+      `Impossible to add order ${order.symbol} of price ${order.price}`
     );
   }
 

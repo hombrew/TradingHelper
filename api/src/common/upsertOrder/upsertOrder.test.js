@@ -47,7 +47,7 @@ describe("upsertOrder", () => {
     const trade = db.data.createTrade();
     const order = db.data.createEntry();
     await expect(upsertOrder(trade, order)).rejects.toThrow(
-      `Imposibble to add order ${order.symbol} of price ${order.price}`
+      `Impossible to add order ${order.symbol} of price ${order.price}`
     );
   });
 

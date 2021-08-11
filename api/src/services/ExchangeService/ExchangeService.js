@@ -3,6 +3,7 @@ const {
   BINANCE_API_KEY,
   BINANCE_API_SECRET_KEY,
 } = require("../../config/constants");
+const { fixedParseFloat } = require("../../utils");
 const { upsertOrder } = require("./order");
 const { calculateTradeValues } = require("./calculator/index");
 const { getMinimum } = require("./minimum");
@@ -62,6 +63,11 @@ class ExchangeService {
 
   getMinimum(symbol) {
     return getMinimum.call(this, symbol);
+  }
+
+  async getAccountBalance() {
+    const account = await this.binance.futuresAccount();
+    return fixedParseFloat(account.totalWalletBalance);
   }
 
   async getPrice(symbol) {
