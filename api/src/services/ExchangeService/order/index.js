@@ -35,7 +35,7 @@ async function upsertOrder(direction, order) {
     if (type === ORDER_TYPE_LIMIT) {
       await this.binance.futuresMarginType(symbol, "ISOLATED");
       const lev = await this.binance.futuresLeverage(symbol, leverage);
-      LogService.info("LEVERAGE UPDATE", lev);
+      LogService.info("LEVERAGE UPDATE", lev, order);
       await sleep(200);
     }
 
