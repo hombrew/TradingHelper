@@ -5,6 +5,7 @@ const {
   ORDER_TYPE_TAKE_PROFIT_MARKET,
 } = require("../../../config/binance.contracts");
 const { sleep } = require("../../../utils");
+const { LogService } = require("../../LogService");
 
 // async function getOpenPositions() {
 //   const allPositions = await binance.futuresPositionRisk();
@@ -33,7 +34,8 @@ async function upsertOrder(direction, order) {
 
     if (type === ORDER_TYPE_LIMIT) {
       await this.binance.futuresMarginType(symbol, "ISOLATED");
-      await this.binance.futuresLeverage(symbol, leverage);
+      const lev = await this.binance.futuresLeverage(symbol, leverage);
+      LogService.info("LEVERAGE UPDATE", lev);
       await sleep(200);
     }
 
