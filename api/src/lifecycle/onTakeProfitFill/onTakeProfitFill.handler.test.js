@@ -27,15 +27,15 @@ describe("onTakeProfitFillHandler", () => {
       await trades.onEntryFillByEntryOrder({ price: 31000 });
       await trades.onEntryFillByEntryOrder({ price: 30500 });
 
-      await trades.expectStopLossPositionToBe({}, 0.034);
+      await trades.expectStopLossPositionToBe({}, 0.038);
       await trades.expectStopLossPriceToBe({}, 29000);
 
       await trades.onTakeProfitFillByTakeProfitOrder({ price: 33000 });
-      await trades.expectStopLossPositionToBe({}, 0.023);
+      await trades.expectStopLossPositionToBe({}, 0.026);
       await trades.expectStopLossPriceToBe({}, 29000);
 
       await trades.onTakeProfitFillByTakeProfitOrder({ price: 34000 });
-      await trades.expectStopLossPositionToBe({}, 0.012);
+      await trades.expectStopLossPositionToBe({}, 0.014);
       await trades.expectStopLossPriceToBe({}, 31000);
     });
 
@@ -72,15 +72,15 @@ describe("onTakeProfitFillHandler", () => {
       await trades.onEntryFillByEntryOrder({ price: 33000 });
       await trades.onEntryFillByEntryOrder({ price: 34000 });
 
-      await trades.expectStopLossPositionToBe({}, 0.024);
+      await trades.expectStopLossPositionToBe({}, 0.027);
       await trades.expectStopLossPriceToBe({}, 36000);
 
       await trades.onTakeProfitFillByTakeProfitOrder({ price: 31000 });
-      await trades.expectStopLossPositionToBe({}, 0.016);
+      await trades.expectStopLossPositionToBe({}, 0.018);
       await trades.expectStopLossPriceToBe({}, 36000);
 
       await trades.onTakeProfitFillByTakeProfitOrder({ price: 30500 });
-      await trades.expectStopLossPositionToBe({}, 0.008);
+      await trades.expectStopLossPositionToBe({}, 0.009);
       await trades.expectStopLossPriceToBe({}, 33000);
     });
 

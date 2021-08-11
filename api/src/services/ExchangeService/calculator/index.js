@@ -1,13 +1,12 @@
+/* eslint-disable no-unused-vars */
 const { TRADE_DIRECTION_LONG } = require("../../../config/constants");
 const { contracts } = require("../../../config/binance.contracts");
 const { truncate, round } = require("../../../utils");
 const { generateDCA } = require("./DCA");
 const { checkTrade } = require("./fix");
 const {
-  getNeededMargin,
   getNeededLiquidation,
   createLeveragedList,
-  getRowByLeverage,
   getRowByNotional,
 } = require("./utils");
 
@@ -15,66 +14,59 @@ function calculateEntry(order, direction, stopLoss, minimum) {
   const { symbol, price, risked } = order;
   const { stepSize } = minimum;
 
+  const maxPosition = truncate(
+    risked / Math.abs(price - stopLoss.price),
+    stepSize
+  );
+  const notional = maxPosition * price;
   const liquidation = getNeededLiquidation(direction, price, stopLoss);
-  const balance = getNeededMargin(risked, "0.01");
 
   const data = contracts[symbol];
   const isLong = direction === TRADE_DIRECTION_LONG;
   const side = isLong ? 1 : -1;
-  const minmax = isLong ? "max" : "min";
 
-  const minLeverageAvailable = data[data.length - 1][3];
-  const maxLeverageAvailable = data[0][4];
+  const row = getRowByNotional(data, notional);
+  const mmr = row[6] / 100;
+  const ma = row[7];
+  const minBalance =
+    liquidation * (maxPosition * (mmr - side)) +
+    side * maxPosition * price -
+    ma;
+
+  const minLeverageAvailable = 1;
+  const maxLeverageAvailable = row[4];
   const leveragedList = createLeveragedList(
     minLeverageAvailable,
     maxLeverageAvailable
-  ).filter((leverage) => {
-    const row = getRowByLeverage(data, leverage);
-    return balance * leverage <= row[2];
+  );
+
+  const balanceLeverageMap = leveragedList.map((leverage) => {
+    const neededBalance = notional / leverage;
+    const balance = Math.max(minBalance, neededBalance);
+
+    return [balance, leverage];
   });
 
-  const positionLeverageMap = leveragedList
-    .map((leverage) => {
-      const notional = balance * leverage;
-      const row = getRowByNotional(data, notional);
-
-      const mmr = row[6] / 100;
-      const ma = row[7];
-
-      const maxLeveragedPos = truncate(notional / price, stepSize);
-
-      const calculatedLiquidation =
-        (balance + ma - side * maxLeveragedPos * price) /
-        (maxLeveragedPos * (mmr - side));
-
-      return [leverage, maxLeveragedPos, calculatedLiquidation];
-    })
-    .filter(([, , calculatedLiquidation]) =>
-      isLong
-        ? calculatedLiquidation <= liquidation
-        : calculatedLiquidation >= liquidation
-    );
-
-  const maxLiquidationAvailable = Math[minmax](
-    ...positionLeverageMap.map(
-      ([, , calculatedLiquidation]) => calculatedLiquidation
-    )
+  const minCalculatedBalance = Math.min(
+    ...balanceLeverageMap.map(([balance]) => balance)
+  );
+  const filteredBalanceLeverageMap = balanceLeverageMap.filter(
+    ([balance]) => balance === minCalculatedBalance
+  );
+  const minCalculatedLeverage = Math.min(
+    ...filteredBalanceLeverageMap.map(([_, leverage]) => leverage)
   );
 
-  const [maxLeverage, maxPosition] = positionLeverageMap.find(
-    ([, , calculatedLiquidation]) =>
-      calculatedLiquidation === maxLiquidationAvailable
+  const [balance, leverage] = filteredBalanceLeverageMap.find(
+    ([_, leverage]) => leverage === minCalculatedLeverage
   );
-
-  const minBalance = (price * maxPosition) / maxLeverage;
 
   return {
     ...order,
-    balance,
-    minBalance: round(minBalance, 2),
-    leverage: maxLeverage,
+    balance: round(balance, 2),
+    leverage,
     position: maxPosition,
-    liquidation: round(maxLiquidationAvailable, 2),
+    liquidation: round(liquidation, 2),
   };
 }
 

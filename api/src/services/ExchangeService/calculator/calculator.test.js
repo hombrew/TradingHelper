@@ -35,24 +35,25 @@ const createShort = createTrade.bind(null, TRADE_DIRECTION_SHORT);
 
 describe("calculator", () => {
   it.each([
-    [createLong("ZENUSDT", 3, 7, 44, [47.7, 46]), 42.24, 43.08, 43.14],
+    [createLong("ZENUSDT", 3, 58, 44, [47.7, 46]), 26.59, 27.07, 28.48],
     [
       createLong("ALICEUSDT", 4, 128.62, 4.798, [5.505, 5.106]),
-      4.45,
-      4.52,
-      4.63,
-      4.69,
+      42.72,
+      43.29,
+      44.11,
+      45.63,
     ],
-    [createLong("1INCHUSDT", 4, 4, 1.8, [1.96, 1.92]), 1.73, 1.75, 1.74, 1.76],
-    [createShort("ENJUSDT", 3, 25, 1.4, [1.3, 1.35]), 1.43, 1.42, 1.42],
-    [createShort("BATUSDT", 1, 237, 0.6073, [0.555]), 0.63],
-  ])("should return the correct value", async (trade, ...liquidations) => {
+    [createLong("1INCHUSDT", 4, 4, 1.8, [1.96, 1.92]), 1.32, 1.22, 1.3, 1.36],
+    [createShort("ENJUSDT", 3, 25, 1.4, [1.3, 1.35]), 11.69, 12.11, 12.85],
+    [createShort("BATUSDT", 1, 237, 0.6073, [0.555]), 328.15],
+    [createLong("ONTUSDT", 3, 58, 0.69, [0.693]), 669.9],
+  ])("should return the correct value", async (trade, ...balances) => {
     const calculatedTrade = await calculateTradeValues.call(
       ExchangeService,
       trade
     );
-    liquidations.forEach((liquidation, index) => {
-      expect(calculatedTrade.entries[index].liquidation).toBe(liquidation);
+    balances.forEach((balance, index) => {
+      expect(calculatedTrade.entries[index].balance).toBe(balance);
     });
   });
 });

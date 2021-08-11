@@ -8,7 +8,7 @@ const { findTrades } = require("../findTrade");
 
 const byFilled = (order) => order.status === ORDER_STATUS_FILLED;
 const byPosition = (order) => order.position;
-const byBalance = (order) => order.minBalance;
+const byBalance = (order) => order.balance;
 
 async function fixPositionMargin(symbol) {
   const [position] = await ExchangeService.getOpenPositions(symbol);

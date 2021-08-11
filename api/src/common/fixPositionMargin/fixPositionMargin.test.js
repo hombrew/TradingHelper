@@ -41,7 +41,7 @@ describe("fixPositionMargin", () => {
     expect(ExchangeService.addPositionMargin).toHaveBeenNthCalledWith(
       1,
       "BTCUSDT",
-      7.45
+      10.33
     );
   });
 });

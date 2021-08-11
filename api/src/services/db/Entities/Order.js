@@ -19,7 +19,6 @@ const orderSchema = new mongoose.Schema({
   },
   position: Number,
   balance: Number,
-  minBalance: Number,
   type: {
     type: String,
     required: true,
