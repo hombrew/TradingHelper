@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.dev
       context: ./server
     ports:
-      - 5050:80
+      - ${RTB_APP_PORT}:80
 
   api:
     container_name: api
